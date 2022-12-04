@@ -15,6 +15,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 
 // Add services to the container.
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddTransient<EncounterServices>();
 
 builder.Services.AddControllersWithViews();
 

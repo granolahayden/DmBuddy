@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Encounter";
+}
+
+@ViewData["test"]
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#creatureModal">
+    Launch demo modal
+</button>
+
+<table>
+    
+</table>
+
+<button onclick="addCreature()">Add Creature</button>
+<partial name="_CreatureModal" />
+
+<script type="text/javascript">
+    function addCreature(){
+        $.post("/Encounter/AddCreature", {}, function (result) { console.log(result); });
+    }
+</script>
