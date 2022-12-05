@@ -1,0 +1,38 @@
+﻿<div class="modal fade" id="addCreatureModal" tabindex="-1" aria-labelledby="addCreatureModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCreatureModalLabel">New Creature</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="creatureNameInput" class="col-form-label">Creature Name:</label>
+                        <input type="text" class="form-control" id="creatureNameInput">
+                    </div>
+                    <div class="mb-3 container">
+                        <div class="row align=items-start">
+                            <div class="col">
+                                <label for="creatureInitiativeInput" class="col-form-label">Initiative:</label>
+                                <input type="number" class="form-control" id="creatureInitiativeInput">
+                            </div>
+                            <div class="col">
+                                <label for="creatureHPInput" class="col-form-label">HP:</label>
+                                <input type="number" class="form-control" id="creatureHPInput">
+                            </div>
+                            <div class="col">
+                                <label for="creatureACInput" class="col-form-label">AC:</label>
+                                <input type="number" class="form-control" id="creatureACInput">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="dmb.encounter.AddCreature();dmb.encounter.ClearCreatureForm();">Add Creature</button>
+            </div>
+        </div>
+    </div>
+</div>

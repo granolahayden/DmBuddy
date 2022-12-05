@@ -2,21 +2,19 @@
     ViewData["Title"] = "Encounter";
 }
 
-@ViewData["test"]
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#creatureModal">
-    Launch demo modal
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCreatureModal" >
+    Add Creatures
 </button>
 
-<table>
-    
-</table>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#creatureModal">
+    Open Creature Modal
+</button>
 
-<button onclick="addCreature()">Add Creature</button>
+
 <partial name="_CreatureModal" />
+<partial name="_AddCreatureModal" />
 
-<script type="text/javascript">
-    function addCreature(){
-        $.post("/Encounter/AddCreature", {}, function (result) { console.log(result); });
-    }
-</script>
+@section scripts{
+    <script src="~/js/encounter.js"></script>
+}
