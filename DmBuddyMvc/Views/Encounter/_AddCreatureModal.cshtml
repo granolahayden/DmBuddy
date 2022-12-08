@@ -14,16 +14,17 @@
                     <div class="mb-3 container">
                         <div class="row align=items-start">
                             <div class="col">
-                                <label for="creatureInitiativeInput" class="col-form-label">Initiative:</label>
-                                <input type="number" class="form-control" id="creatureInitiativeInput">
+                                <label for="creatureInitiativeInput" class="col-form-label text-decoration-underline" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                title="By seperating initiative counts with a comma, you can create multiple instances of a creature at once! Ex: 10, 11, 8, 20">Initiative:</label>
+                                <input type="text" class="form-control" id="creatureInitiativeInput">
                             </div>
                             <div class="col">
                                 <label for="creatureHPInput" class="col-form-label">HP:</label>
-                                <input type="number" class="form-control" id="creatureHPInput">
+                                <input type="text" class="form-control" id="creatureHPInput">
                             </div>
                             <div class="col">
                                 <label for="creatureACInput" class="col-form-label">AC:</label>
-                                <input type="number" class="form-control" id="creatureACInput">
+                                <input type="text" class="form-control" id="creatureACInput">
                             </div>
                         </div>
                     </div>
@@ -31,7 +32,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="dmb.encounter.AddCreature();dmb.encounter.ClearCreatureForm();">Add Creature</button>
+                <button type="button" class="btn btn-primary" onclick="dmb.encounter.AddCreaturesAndResetForm();">Add Creature</button>
             </div>
         </div>
     </div>
