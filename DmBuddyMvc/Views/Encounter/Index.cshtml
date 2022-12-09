@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Encounter";
+}
+
+
+<partial name="_Creature" />
+
+<table id="initiativeTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="row" width="40px">Init.</th>
+            <th scope="row">Name</th>
+            <th scope="row" width="10%">HP</th>
+            <th width="150px"></th>
+            <th style="display:none">Id</th>
+            <th width="5%"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCreatureModal" >
+    Add Creatures
+</button>
+
+
+<partial name="_AddCreatureModal" />
+
+@section scripts{
+    <script src="~/js/encounter.js"></script>
+}
