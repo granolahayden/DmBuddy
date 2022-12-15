@@ -86,9 +86,10 @@ var dmb;
             row.insertCell(initiativeIndex).innerHTML = creature.Initiative.toString();
             row.insertCell(nameIndex).innerHTML = creature.NameCount > 1 ? creature.Name + " - " + creature.NameCount : creature.Name;
             row.insertCell(hpIndex).innerHTML = creature.GetHP();
-            row.insertCell(damageInputIndex).innerHTML = "<div class='row text-center' style='width:160px'><div class='col text-center' style='width:30px'><button type='button' class='btn btn-danger' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ", \"-\")'>-</button></div>" +
-                "<div class='col text-center' style='width:100px'><input style='width:100%' type='text' id='" + creature.Id + "_DamageOrHealAmount'/></div>" +
-                "<div class='col text-center' style='width:30px'><button type='button' class='btn btn-success' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ")'>+</button></div></div>";
+            row.insertCell(damageInputIndex).innerHTML = "<div class='d-flex flex-row'>" +
+                "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ", \"-\")'>-</button></div>" +
+                "<div class='text-center p-2'><input style='width:100%' type='text' id='" + creature.Id + "_DamageOrHealAmount'/></div>" +
+                "<div class='text-center p-2 align-middle'><button type='button' class='btn btn-success' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ")'>+</button></div></div>";
             row.insertCell(idIndex).outerHTML = "<td style='display:none'>" + creature.Id + "</td>";
             row.insertCell(deleteIndex).innerHTML = "<button type='button' class='btn btn-outline-danger' onclick='dmb.encounter.RemoveFromInitiative(" + creature.Id + ")'><i class='bi bi-trash'></i></button>";
         }
