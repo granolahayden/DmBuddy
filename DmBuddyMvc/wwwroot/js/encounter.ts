@@ -26,10 +26,13 @@
 
     declare let creatures: Creature[];
     declare let id: number;
+    declare let currentCreatureId: number;
+
     declare let nameInput: JQuery<HTMLElement>;
     declare let acInput: JQuery<HTMLElement>;
     declare let hpInput: JQuery<HTMLElement>;
     declare let initiativeInput: JQuery<HTMLElement>;
+    declare let notesInput: JQuery<HTMLElement>;
 
     export function Init(): void {
         creatures = [];
@@ -39,6 +42,7 @@
         acInput = $("#creatureACInput");
         hpInput = $("#creatureHPInput");
         initiativeInput = $("#creatureInitiativeInput");
+        notesInput = $("#creatureNotesInput");
 
         $("#addCreatureModal").on('show.bs.modal', function (event: JQueryEventObject) {
             setTimeout(function () {
@@ -59,12 +63,10 @@
     }
 
     export function AddCreatures(): void {
-        //let initiatives = initiativeInput.val().toString().split(",");
         let initiatives = initiativeInput.val().toString().match(initiativeRegex);
         if (initiatives.length < 1)
             return;
 
-        //if this creature name already exists in the table, add a ' - 1'...
         let nameCount = 0;
         let creaturesWithSameName = creatures.filter(c => c.Name == nameInput.val() as string);
         creaturesWithSameName.forEach(c => { if (Number(nameCount) < Number(c.NameCount)) nameCount = c.NameCount; })
@@ -72,6 +74,7 @@
         let name = nameInput.val() as string;
         let ac = Number(acInput.val());
         let hp = Number(hpInput.val());
+        let notes = notesInput.val() as string;
 
         for (let i = 0; i < initiatives.length; i++) {
             let creature = new Creature();
@@ -82,6 +85,7 @@
             creature.AC = ac;
             creature.CurrentHP = hp;
             creature.MaxHP = hp;
+            creature.Notes = notes;
 
             AddCreature(creature);
         }
@@ -116,10 +120,18 @@
         row.insertCell(hpIndex).innerHTML = creature.GetHP();
         row.insertCell(damageInputIndex).innerHTML = "<div class='d-flex flex-row'>" +
             "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ", \"-\")'>-</button></div>" +
-            "<div class='text-center p-2'><input style='width:100%' type='text' id='" + creature.Id + "_DamageOrHealAmount'/></div>" +
+            "<div class='text-center p-2'><input style='width:100%' class='text-center' type='text' id='" + creature.Id + "_DamageOrHealAmount'/></div>" +
             "<div class='text-center p-2 align-middle'><button type='button' class='btn btn-success' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ")'>+</button></div></div>";
         row.insertCell(idIndex).outerHTML = "<td style='display:none'>" + creature.Id + "</td>";
         row.insertCell(deleteIndex).innerHTML = "<button type='button' class='btn btn-outline-danger' onclick='dmb.encounter.RemoveFromInitiative(" + creature.Id + ")'><i class='bi bi-trash'></i></button>";
+    }
+
+    export function ClearCreatureForm(): void {
+        nameInput.val("");
+        acInput.val("");
+        hpInput.val("");
+        initiativeInput.val("");
+        nameInput.focus();
     }
 
     export function HealCreatureFromId(id: number, sign: string = "+"): void {        
@@ -142,12 +154,44 @@
         creatures.splice(deleteIndex, 1);
     }
 
-    export function ClearCreatureForm(): void {
-        nameInput.val("");
-        acInput.val("");
-        hpInput.val("");
-        initiativeInput.val("");
-        nameInput.focus();
+
+    export function ShowNextCreature(): void {
+        if (creatures.length == 0) {
+            return;
+        }
+        else if (currentCreatureId == null) {
+            FillCreatureDisplay(creatures[0]);
+            currentCreatureId = creatures[0].Id;
+            return;
+        }
+
+        let currentcreatureindex = creatures.indexOf(creatures.find(c => c.Id == currentCreatureId));
+        let nextcreatureindex = currentcreatureindex == creatures.length - 1 ? 0 : Number(currentcreatureindex) + 1;
+        let nextcreature = creatures[nextcreatureindex];
+
+        FillCreatureDisplay(nextcreature);
+        currentCreatureId = nextcreature.Id;
+    }
+
+    function FillCreatureDisplay(creature: Creature): void {
+        document.getElementById("creatureDisplayName")
+        document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
+        document.getElementById("creatureDisplayAC").innerHTML = creature.AC.toString();
+        $("creatureDisplayNotes").val(creature.Notes);
+    }
+
+    export function ShowPreviousCreature(): void {
+        if (creatures.length == 0) {
+            return;
+        }
+        else if (currentCreatureId == null) {
+            FillCreatureDisplay(creatures[creatures.length - 1]);
+            currentCreatureId = creatures[creatures.length - 1].Id;
+            return;
+        }
+
+        let currentcreatureindex = creatures.indexOf(creatures.find(c => c.Id == currentCreatureId));
+        let previouscreatureindex = currentcreatureindex == 0 ? creatures.length - 1 : Number(currentcreatureindex) - 1
     }
 }
 
