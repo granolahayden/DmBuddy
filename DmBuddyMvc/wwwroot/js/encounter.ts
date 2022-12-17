@@ -13,20 +13,29 @@
         GetHP(): string {
             return this.CurrentHP.toString() + "/" + this.MaxHP.toString();
         }
+
+        GetName(): string {
+            if (this.NameCount > 1)
+                return this.Name + " - " + this.NameCount;
+            else
+                return this.Name;
+        }
     }
 
-    const initiativeIndex: number = 0;
-    const nameIndex: number = 1;
-    const hpIndex: number = 2;
-    const damageInputIndex: number = 3;
-    const idIndex: number = 4;
-    const deleteIndex: number = 5;
+    const INITIATIVEINDEX: number = 0;
+    const NAMEINDEX: number = 1;
+    const HPINDEX: number = 2;
+    const DAMAGEINPUTINDEX: number = 3;
+    const IDINDEX: number = 4;
+    const DELETEINDEX: number = 5;
 
-    const initiativeRegex = /\d+\.?\d?/g;
+    const INITIATIVEREGEX = /\d+\.?\d?/g;
+
+    const HPCHANGEDISPLAYID = "DamageOrHealAmountFromDisplay";
+    const SELECTEDROWCLASS = "bg-warning";
 
     declare let creatures: Creature[];
     declare let id: number;
-    declare let currentCreatureId: number;
 
     declare let nameInput: JQuery<HTMLElement>;
     declare let acInput: JQuery<HTMLElement>;
@@ -50,11 +59,26 @@
             }, 500);
         });
 
-        $("#addCreatureModal").keyup(function (e) {
+        $("#creatureInitiativeInput").keyup(function (e) {
             if (e.keyCode === 13) {
                 AddCreaturesAndResetForm();
             }
         });
+
+        $("#creatureHPInput").keyup(function (e) {
+            if (e.keyCode === 13) {
+                AddCreaturesAndResetForm();
+            }
+        });
+
+        $("#creatureACInput").keyup(function (e) {
+            if (e.keyCode === 13) {
+                AddCreaturesAndResetForm();
+            }
+        });
+
+        $("#creatureDisplayNotes").val("");
+        $("#DamageOrHealAmountFromDisplay").val("");
     }
 
     export function AddCreaturesAndResetForm(): void {
@@ -63,7 +87,7 @@
     }
 
     export function AddCreatures(): void {
-        let initiatives = initiativeInput.val().toString().match(initiativeRegex);
+        let initiatives = initiativeInput.val().toString().match(INITIATIVEREGEX);
         if (initiatives.length < 1)
             return;
 
@@ -115,15 +139,16 @@
         creatures.splice(index, 0, creature);
 
         let row = table.getElementsByTagName('tbody')[0].insertRow(index);
-        row.insertCell(initiativeIndex).innerHTML = creature.Initiative.toString();
-        row.insertCell(nameIndex).innerHTML = creature.NameCount > 1 ? creature.Name + " - " + creature.NameCount : creature.Name;
-        row.insertCell(hpIndex).innerHTML = creature.GetHP();
-        row.insertCell(damageInputIndex).innerHTML = "<div class='d-flex flex-row'>" +
-            "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ", \"-\")'>-</button></div>" +
-            "<div class='text-center p-2'><input style='width:100%' class='text-center' type='text' id='" + creature.Id + "_DamageOrHealAmount'/></div>" +
+        row.id = creature.Id + "_row";
+        row.insertCell(INITIATIVEINDEX).innerHTML = creature.Initiative.toString();
+        row.insertCell(NAMEINDEX).innerHTML = creature.GetName();
+        row.insertCell(HPINDEX).innerHTML = creature.GetHP();
+        row.insertCell(DAMAGEINPUTINDEX).innerHTML = "<div class='d-flex flex-row'>" +
+            "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.DamageCreatureFromId(" + creature.Id + ")'>-</button></div>" +
+            "<div class='text-center p-2'><input style='width:100%' class='text-center' type='text' id='" + creature.Id + "_DamageOrHealAmountFromTable'/></div>" +
             "<div class='text-center p-2 align-middle'><button type='button' class='btn btn-success' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ")'>+</button></div></div>";
-        row.insertCell(idIndex).outerHTML = "<td style='display:none'>" + creature.Id + "</td>";
-        row.insertCell(deleteIndex).innerHTML = "<button type='button' class='btn btn-outline-danger' onclick='dmb.encounter.RemoveFromInitiative(" + creature.Id + ")'><i class='bi bi-trash'></i></button>";
+        row.insertCell(IDINDEX).outerHTML = "<td style='display:none'>" + creature.Id + "</td>";
+        row.insertCell(DELETEINDEX).innerHTML = "<div class='p-2'><button type='button' class='btn btn-danger' id='"+creature.Id+"_delete' onclick='dmb.encounter.RemoveFromInitiative(" + creature.Id + ")'><i class='bi bi-trash'></i></button></div>";
     }
 
     export function ClearCreatureForm(): void {
@@ -131,20 +156,30 @@
         acInput.val("");
         hpInput.val("");
         initiativeInput.val("");
+        notesInput.val("");
         nameInput.focus();
     }
 
-    export function HealCreatureFromId(id: number, sign: string = "+"): void {        
-        let amount: number = Number($("#" + id + "_DamageOrHealAmount").val());
-        if (sign === "-")
-            amount = -amount;
+    export function HealCreatureFromId(id: number): void {        
+        let amount = Number($("#" + id + "_DamageOrHealAmountFromTable").val());
+        ChangeCreatureHPFromIdByAmount(id, amount);;
+    }
 
+    function ChangeCreatureHPFromIdByAmount(id: number, amount: number) {
         let creature = creatures.find(c => c.Id == id);
-        creature.CurrentHP = Number(creature.CurrentHP) + Number(amount);
+        creature.CurrentHP += Number(amount);
 
         let creatureIndex = creatures.indexOf(creature);
-        let rows = document.getElementById("initiativeTable").getElementsByTagName('tbody')[0].rows;
-        rows[creatureIndex].cells[hpIndex].innerHTML = creature.GetHP();
+        document.getElementById("initiativeTable").getElementsByTagName('tbody')[0].rows[creatureIndex].cells[HPINDEX].innerHTML = creature.GetHP();
+
+        if (Number(document.getElementById("creatureDisplayId").innerHTML) == id) {
+            document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
+        }
+    }
+
+    export function DamageCreatureFromId(id: number): void {
+        let amount = Number($("#" + id + "_DamageOrHealAmountFromTable").val()) * -1;
+        ChangeCreatureHPFromIdByAmount(id, amount);
     }
 
     export function RemoveFromInitiative(id: number) {
@@ -159,39 +194,82 @@
         if (creatures.length == 0) {
             return;
         }
-        else if (currentCreatureId == null) {
+
+        let currentcreatureid = GetCurrentCreatureId();
+        if (currentcreatureid == null) {
             FillCreatureDisplay(creatures[0]);
-            currentCreatureId = creatures[0].Id;
             return;
         }
 
-        let currentcreatureindex = creatures.indexOf(creatures.find(c => c.Id == currentCreatureId));
+        let currentcreature = creatures.find(c => c.Id == currentcreatureid);
+        let currentcreatureindex = creatures.indexOf(currentcreature);
         let nextcreatureindex = currentcreatureindex == creatures.length - 1 ? 0 : Number(currentcreatureindex) + 1;
         let nextcreature = creatures[nextcreatureindex];
 
+        SaveCurrentCreatureThenLoadNext(currentcreature, nextcreature);
+    }
+
+    function GetCurrentCreatureId(): number {
+        return document.getElementById("creatureDisplayId").innerHTML == "" ? null : Number(document.getElementById("creatureDisplayId").innerHTML);
+    }
+
+    function SaveCurrentCreatureThenLoadNext(currentcreature: Creature, nextcreature: Creature): void {
+        DeselectRow(currentcreature.Id);
+        currentcreature.Notes = $("#creatureDisplayNotes").val() as string;
         FillCreatureDisplay(nextcreature);
-        currentCreatureId = nextcreature.Id;
+    }
+
+    function DeselectRow(creatureid: number): void {
+        $("#" + creatureid + "_delete").prop("disabled", false);
+        $(document.getElementById(creatureid + "_row")).removeClass(SELECTEDROWCLASS);
     }
 
     function FillCreatureDisplay(creature: Creature): void {
-        document.getElementById("creatureDisplayName")
+        document.getElementById("creatureDisplayName").innerHTML = creature.GetName();
         document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
         document.getElementById("creatureDisplayAC").innerHTML = creature.AC.toString();
-        $("creatureDisplayNotes").val(creature.Notes);
+        $("#creatureDisplayNotes").val(creature.Notes);
+        document.getElementById("creatureDisplayId").innerHTML = creature.Id.toString();
+
+        SelectRow(creature.Id);
+    }
+
+    function SelectRow(creatureid: number): void {
+        $("#" + creatureid + "_delete").prop("disabled", true);
+        $(document.getElementById(creatureid + "_row")).addClass(SELECTEDROWCLASS);
     }
 
     export function ShowPreviousCreature(): void {
         if (creatures.length == 0) {
             return;
         }
-        else if (currentCreatureId == null) {
+
+        let currentcreatureid = GetCurrentCreatureId();
+        if (currentcreatureid == null) {
             FillCreatureDisplay(creatures[creatures.length - 1]);
-            currentCreatureId = creatures[creatures.length - 1].Id;
             return;
         }
 
-        let currentcreatureindex = creatures.indexOf(creatures.find(c => c.Id == currentCreatureId));
-        let previouscreatureindex = currentcreatureindex == 0 ? creatures.length - 1 : Number(currentcreatureindex) - 1
+        let currentcreature = creatures.find(c => c.Id == currentcreatureid);
+        let currentcreatureindex = creatures.indexOf(currentcreature);
+        let previouscreatureindex = currentcreatureindex == 0 ? creatures.length - 1 : Number(currentcreatureindex) - 1;
+        let previouscreature = creatures[previouscreatureindex];
+
+        SaveCurrentCreatureThenLoadNext(currentcreature, previouscreature);
+    }
+
+    export function HealFromDisplay(): void {
+        let amount = Number($("#" + HPCHANGEDISPLAYID).val());
+        let id = Number(document.getElementById("creatureDisplayId").innerHTML);
+
+        ChangeCreatureHPFromIdByAmount(id, amount);
+    }
+
+    export function DamageFromDisplay(): void {
+        let amount = Number($("#" + HPCHANGEDISPLAYID).val())*-1;
+        let id = Number(document.getElementById("creatureDisplayId").innerHTML);
+
+        ChangeCreatureHPFromIdByAmount(id, amount);
     }
 }
 

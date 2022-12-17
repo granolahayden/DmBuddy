@@ -1,36 +1,37 @@
 ﻿<div class="container text-center">
+    <div style="display:none" id="creatureDisplayId"></div>
     <div class="d-flex justify-content-center">
         <div class="p-2">
-            <button class="btn btn-primary"><i class="bi-arrow-left"></i></button>
+            <button class="btn btn-primary" onclick="dmb.encounter.ShowPreviousCreature()"><i class="bi-arrow-left"></i></button>
         </div>
         <div class="p-2 w-100">
-            <span id="creatureName" class="h1 text-center">Nothing yet!</span>
+            <span id="creatureDisplayName" class="h1 text-center">Nothing yet!</span>
         </div>
         <div class="p-2">
-            <button class="btn btn-primary"><i class="bi-arrow-right"></i></button>
+            <button class="btn btn-primary" onclick="dmb.encounter.ShowNextCreature()"><i class="bi-arrow-right"></i></button>
         </div>
     </div>
     <hr/>
     <h3>HP</h3>
     <div class="d-flex justify-content-center">
         <div class="p-3">
-            <button class="btn btn-outline-danger">-</button>
+            <button class="btn btn-outline-danger" onclick="dmb.encounter.DamageFromDisplay()">-</button>
         </div>
         <div class="px-2">
-            <p id="creatureHP" class="h4">--</p>
+            <p id="creatureDisplayHP" class="h4">--</p>
             <div class="text-center" style="width:80px">
-                <input type="text" class="text-center" style="width:100%" />
+                <input type="text" id="DamageOrHealAmountFromDisplay" value="" class="text-center" style="width:100%" />
             </div>
             
         </div>
         <div class="p-3">
-            <button class="btn btn-outline-success">+</button>
+            <button class="btn btn-outline-success" onclick="dmb.encounter.HealFromDisplay()">+</button>
         </div>
     </div>
     <br/>
 
     <h3>AC</h3>
-    <p id="creatureAC" class="h4">--</p>
+    <p id="creatureDisplayAC" class="h4">--</p>
     <br/>
 
     <h3>Notes</h3>
