@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DmBuddyMvc.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+
+    @if (!(User.IsInRole(IdentityConsts.Roles.Admin) || User.IsInRole(IdentityConsts.Roles.Premium)))
+    {
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7867641612810953"
+            crossorigin="anonymous"></script>
+    }
 </head>
 <body>
     <header>
@@ -50,11 +56,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @if (User.IsInRole(IdentityConsts.Roles.Admin) || User.IsInRole(IdentityConsts.Roles.Premium))
-    {
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7867641612810953"
-            crossorigin="anonymous"></script>
-    }
     
     @await RenderSectionAsync("Scripts", required: false)
 </body>
