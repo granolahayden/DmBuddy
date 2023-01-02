@@ -24,10 +24,11 @@
 
     const INITIATIVEINDEX: number = 0;
     const NAMEINDEX: number = 1;
-    const HPINDEX: number = 2;
-    const DAMAGEINPUTINDEX: number = 3;
-    const IDINDEX: number = 4;
-    const DELETEINDEX: number = 5;
+    const ACINDEX: number = 2;
+    const HPINDEX: number = 3;
+    const DAMAGEINPUTINDEX: number = 4;
+    const IDINDEX: number = 5;
+    const DELETEINDEX: number = 6;
 
     const INITIATIVEREGEX = /\d+\.?\d?/g;
 
@@ -142,6 +143,7 @@
         row.id = creature.Id + "_row";
         row.insertCell(INITIATIVEINDEX).innerHTML = creature.Initiative.toString();
         row.insertCell(NAMEINDEX).innerHTML = creature.GetName();
+        row.insertCell(ACINDEX).innerHTML = creature.AC.toString();
         row.insertCell(HPINDEX).innerHTML = creature.GetHP();
         row.insertCell(DAMAGEINPUTINDEX).innerHTML = "<div class='d-flex flex-row'>" +
             "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.DamageCreatureFromId(" + creature.Id + ")'>-</button></div>" +

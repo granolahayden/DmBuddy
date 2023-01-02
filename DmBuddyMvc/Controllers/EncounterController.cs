@@ -7,9 +7,7 @@ namespace DmBuddyMvc.Controllers
     {        
         public IActionResult Index(Guid? id)
         {
-            if(User.IsInRole(IdentityConsts.Roles.Admin) || User.IsInRole(IdentityConsts.Roles.Premium))
-                return View("PremiumEncounter");
-            return View("BasicEncounter");
+            return View("Encounter");
         }
 
         [HttpPost]

@@ -2,7 +2,6 @@
 using DmBuddyMvc.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using System.Diagnostics;
 
 namespace DmBuddyMvc.Controllers
@@ -28,19 +27,19 @@ namespace DmBuddyMvc.Controllers
             return View();
         }
 
-        public IActionResult Premium() 
+        public IActionResult Premium()
         {
             if (User.IsInRole(IdentityConsts.Roles.Admin))
                 return RedirectToAction("Privacy");
             return View("Index");
         }
-        
+
         [Authorize(Policy = "RequireAdmin")]
         public IActionResult Admin()
         {
             return View("Index");
         }
-        
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -1,0 +1,4 @@
+﻿namespace dmb.paste
+{
+
+}
