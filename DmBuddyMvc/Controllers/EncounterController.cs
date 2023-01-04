@@ -5,9 +5,15 @@ namespace DmBuddyMvc.Controllers
 {
     public class EncounterController : Controller
     {        
-        public IActionResult Index()
+        public IActionResult Index(Guid? id)
         {
-            return View(new List<Creature>());
+            return View("Encounter");
+        }
+
+        [HttpPost]
+        public IActionResult GetCreatureAsync()
+        {
+            return Json("");
         }
     }
 }

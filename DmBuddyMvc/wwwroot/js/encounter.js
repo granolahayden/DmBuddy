@@ -15,10 +15,11 @@ var dmb;
         }
         const INITIATIVEINDEX = 0;
         const NAMEINDEX = 1;
-        const HPINDEX = 2;
-        const DAMAGEINPUTINDEX = 3;
-        const IDINDEX = 4;
-        const DELETEINDEX = 5;
+        const ACINDEX = 2;
+        const HPINDEX = 3;
+        const DAMAGEINPUTINDEX = 4;
+        const IDINDEX = 5;
+        const DELETEINDEX = 6;
         const INITIATIVEREGEX = /\d+\.?\d?/g;
         const HPCHANGEDISPLAYID = "DamageOrHealAmountFromDisplay";
         const SELECTEDROWCLASS = "bg-warning";
@@ -81,6 +82,9 @@ var dmb;
                 creature.CurrentHP = hp;
                 creature.MaxHP = hp;
                 creature.Notes = notes;
+                if (dmb.premiumEncounter.IsPremium) {
+                    creature.PictureData = dmb.premiumEncounter.GetPictureValue();
+                }
                 AddCreature(creature);
             }
         }
@@ -107,6 +111,7 @@ var dmb;
             row.id = creature.Id + "_row";
             row.insertCell(INITIATIVEINDEX).innerHTML = creature.Initiative.toString();
             row.insertCell(NAMEINDEX).innerHTML = creature.GetName();
+            row.insertCell(ACINDEX).innerHTML = creature.AC.toString();
             row.insertCell(HPINDEX).innerHTML = creature.GetHP();
             row.insertCell(DAMAGEINPUTINDEX).innerHTML = "<div class='d-flex flex-row'>" +
                 "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.DamageCreatureFromId(" + creature.Id + ")'>-</button></div>" +
@@ -121,6 +126,8 @@ var dmb;
             hpInput.val("");
             initiativeInput.val("");
             notesInput.val("");
+            if (dmb.premiumEncounter.IsPremium)
+                dmb.premiumEncounter.ClearPictureInput();
             nameInput.focus();
         }
         encounter.ClearCreatureForm = ClearCreatureForm;
@@ -185,6 +192,9 @@ var dmb;
             document.getElementById("creatureDisplayAC").innerHTML = creature.AC.toString();
             $("#creatureDisplayNotes").val(creature.Notes);
             document.getElementById("creatureDisplayId").innerHTML = creature.Id.toString();
+            if (dmb.premiumEncounter.IsPremium) {
+                dmb.premiumEncounter.SetPictureData(creature.PictureData);
+            }
             SelectRow(creature.Id);
         }
         function SelectRow(creatureid) {
