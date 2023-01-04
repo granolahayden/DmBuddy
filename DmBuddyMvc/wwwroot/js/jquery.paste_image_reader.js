@@ -58,13 +58,22 @@
 
 
 $("html").pasteImageReader(function (results) {
+    if (!$("#addCreatureModal").is(':visible')) {
+        return;
+    }
     var dataURL, filename;
     filename = results.filename, dataURL = results.dataURL;
-    console.log(dataURL);
-    //set img to dataURL
-    let img = $("creaturePictureInput");
-    img.src = dataURL;
+    let creaturePicture = $("#creaturePictureInput");
+    let pictureOverlay = $("#creaturePictureOverlay");
+
+    creaturePicture.attr("src", dataURL);
+
+    creaturePicture.show();
+    pictureOverlay.hide();
+    
 });
+
+
 
 //var dataURL, filename;
 //$("html").pasteImageReader(function (results) {

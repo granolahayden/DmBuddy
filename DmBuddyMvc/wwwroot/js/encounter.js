@@ -82,6 +82,9 @@ var dmb;
                 creature.CurrentHP = hp;
                 creature.MaxHP = hp;
                 creature.Notes = notes;
+                if (dmb.premiumEncounter.IsPremium) {
+                    creature.PictureData = dmb.premiumEncounter.GetPictureValue();
+                }
                 AddCreature(creature);
             }
         }
@@ -123,6 +126,8 @@ var dmb;
             hpInput.val("");
             initiativeInput.val("");
             notesInput.val("");
+            if (dmb.premiumEncounter.IsPremium)
+                dmb.premiumEncounter.ClearPictureInput();
             nameInput.focus();
         }
         encounter.ClearCreatureForm = ClearCreatureForm;
@@ -187,6 +192,9 @@ var dmb;
             document.getElementById("creatureDisplayAC").innerHTML = creature.AC.toString();
             $("#creatureDisplayNotes").val(creature.Notes);
             document.getElementById("creatureDisplayId").innerHTML = creature.Id.toString();
+            if (dmb.premiumEncounter.IsPremium) {
+                dmb.premiumEncounter.SetPictureData(creature.PictureData);
+            }
             SelectRow(creature.Id);
         }
         function SelectRow(creatureid) {

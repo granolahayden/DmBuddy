@@ -9,6 +9,7 @@
         MaxHP: number;
         Initiative: number;
         Notes: string;
+        PictureData: string;
 
         GetHP(): string {
             return this.CurrentHP.toString() + "/" + this.MaxHP.toString();
@@ -111,6 +112,9 @@
             creature.CurrentHP = hp;
             creature.MaxHP = hp;
             creature.Notes = notes;
+            if (dmb.premiumEncounter.IsPremium) {
+                creature.PictureData = dmb.premiumEncounter.GetPictureValue();
+            }
 
             AddCreature(creature);
         }
@@ -159,6 +163,10 @@
         hpInput.val("");
         initiativeInput.val("");
         notesInput.val("");
+
+        if (dmb.premiumEncounter.IsPremium)
+            dmb.premiumEncounter.ClearPictureInput();
+
         nameInput.focus();
     }
 
@@ -232,6 +240,10 @@
         document.getElementById("creatureDisplayAC").innerHTML = creature.AC.toString();
         $("#creatureDisplayNotes").val(creature.Notes);
         document.getElementById("creatureDisplayId").innerHTML = creature.Id.toString();
+
+        if (dmb.premiumEncounter.IsPremium) {
+            dmb.premiumEncounter.SetPictureData(creature.PictureData)
+        }
 
         SelectRow(creature.Id);
     }

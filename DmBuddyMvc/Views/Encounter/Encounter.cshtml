@@ -10,7 +10,9 @@
         <hr/>
         <div class="row row-cols-2">
             <div class="row me-2">
-                <div class="target border-1 bg-dark"></div>
+                <div class="bg-dark">
+                    <img id="creaturePictureDisplay" style="width:100%; height:100%;" />
+                </div>
             </div>
             <div class="row border-start">
                 <partial name="_Creature">
@@ -36,5 +38,10 @@ else
 
 @section scripts{
     <script src="~/js/encounter.js"></script>
-    <script src="~/js/jquery.paste_image_reader.js"></script>
+    <script src="~/js/premiumEncounter.js"></script>
+
+    @if(userIsPremium){    
+        <script src="~/js/jquery.paste_image_reader.js"></script>
+    }
 }
+
