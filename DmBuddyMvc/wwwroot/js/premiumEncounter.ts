@@ -1,5 +1,7 @@
 ﻿namespace dmb.premiumEncounter
 {
+    const READER = new FileReader();
+
     let creaturePictureInput: JQuery<HTMLElement>;
     let creaturePictureDisplay: JQuery<HTMLElement>;
     let creaturePictureFileInput: JQuery<HTMLElement>;
@@ -17,19 +19,15 @@
         creaturePictureFileInput = $("#creaturePictureFileInput");
         creaturePictureInputOverlay = $("#creaturePictureOverlay");
 
-        creaturePictureFileInput.on('input', function (event: JQueryEventObject) {
-            const input: HTMLInputElement = document.querySelector('input[type=file]');
-            const reader = new FileReader();
-            reader.addEventListener("load", () => {
-                // convert image file to base64 string
-                creaturePictureInput.attr("src", reader.result.toString());
-                creaturePictureInput.show();
-                creaturePictureInputOverlay.hide();
-            }, false);
-            if (input) {
-                reader.readAsDataURL(input.files[0]);
-            }
+        READER.addEventListener("load", () => {
+            creaturePictureInput.attr("src", READER.result.toString());
+            creaturePictureInput.show();
+            creaturePictureInputOverlay.hide();
         });
+    }
+
+    export function SetPictureFromUpload(input: HTMLInputElement): void {
+        READER.readAsDataURL(input.files[0]);
     }
 
     function GetIsPremium(): void {
