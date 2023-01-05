@@ -2,6 +2,7 @@ var dmb;
 (function (dmb) {
     var premiumEncounter;
     (function (premiumEncounter) {
+        const READER = new FileReader();
         let creaturePictureInput;
         let creaturePictureDisplay;
         let creaturePictureFileInput;
@@ -14,21 +15,17 @@ var dmb;
             creaturePictureDisplay = $("#creaturePictureDisplay");
             creaturePictureFileInput = $("#creaturePictureFileInput");
             creaturePictureInputOverlay = $("#creaturePictureOverlay");
-            creaturePictureFileInput.on('input', function (event) {
-                const input = document.querySelector('input[type=file]');
-                const reader = new FileReader();
-                reader.addEventListener("load", () => {
-                    // convert image file to base64 string
-                    creaturePictureInput.attr("src", reader.result.toString());
-                    creaturePictureInput.show();
-                    creaturePictureInputOverlay.hide();
-                }, false);
-                if (input) {
-                    reader.readAsDataURL(input.files[0]);
-                }
+            READER.addEventListener("load", () => {
+                creaturePictureInput.attr("src", READER.result.toString());
+                creaturePictureInput.show();
+                creaturePictureInputOverlay.hide();
             });
         }
         premiumEncounter.Init = Init;
+        function SetPictureFromUpload(input) {
+            READER.readAsDataURL(input.files[0]);
+        }
+        premiumEncounter.SetPictureFromUpload = SetPictureFromUpload;
         function GetIsPremium() {
             premiumEncounter.IsPremium = creaturePictureInput.val() != null;
         }
