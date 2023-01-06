@@ -125,11 +125,7 @@ namespace DmBuddyMvc.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
-                    var claims = new List<Claim>
-                    {
-                        new Claim("amr", "pwd")
-                    };
-
+                    List<Claim> claims = new List<Claim>();
                     var roles = await _signInManager.UserManager.GetRolesAsync(user);
                     if (roles.Any())
                     {

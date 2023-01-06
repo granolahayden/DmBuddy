@@ -1,9 +1,9 @@
-﻿@{
+﻿@using DmBuddyMvc.Helpers;
+@{
     ViewData["Title"] = "Encounter";
-    var userIsPremium = User.IsInRole(IdentityConsts.Roles.Admin) || User.IsInRole(IdentityConsts.Roles.Premium);
 }
 
-@if(userIsPremium)
+@if(User.IsAtLeastPremium())
 {
     <div class="container text-center">
         <partial name="_CreatureNameBar" />
@@ -38,7 +38,7 @@ else
     <script src="~/js/encounter.js"></script>
     <script src="~/js/premiumEncounter.js"></script>
 
-    @if(userIsPremium){    
+    @if(User.IsAtLeastPremium()){    
         <script src="~/js/jquery.paste_image_reader.js"></script>
     }
 }
