@@ -28,11 +28,14 @@ else
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCreatureModal">
     Add Creatures
 </button>
-
-<partial name="_CreatureTable" />
-
 <partial name="_AddCreatureModal" />
 
+<partial name="_CreatureTable" />
+<partial name="_CreatureNotesModal" />
+@if (User.IsAtLeastPremium())
+{
+    <partial name="_CreaturePicModal" />
+}
 
 @section scripts{
     <script src="~/js/encounter.js"></script>
