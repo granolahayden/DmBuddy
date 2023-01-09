@@ -93,6 +93,11 @@
             }
             document.getElementById("creatureNotesModalLabel").innerHTML = creature.GetName() + " Notes";
             document.getElementById("creatureNotesModalId").innerHTML = creature.Id.toString();
+
+            if (dmb.premiumEncounter.IsPremium) {
+                dmb.premiumEncounter.SetNotesModalPicture(creature.PictureData);
+            }
+
             $("#creatureNotesModalNotes").val(creature.Notes);
         });
 
@@ -170,6 +175,7 @@
         creatures.splice(index, 0, creature);
 
         let row = table.getElementsByTagName('tbody')[0].insertRow(index);
+        row.className = 'align-middle';
         row.id = creature.Id + "_row";
         row.insertCell(INITIATIVEINDEX).innerHTML = creature.Initiative.toString();
         row.insertCell(NAMEINDEX).innerHTML = creature.GetName();

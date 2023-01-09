@@ -1,4 +1,5 @@
-﻿<div id="creatureNotesModal" class="modal fade" tabindex="-1" aria-labelledby="creatureNotesModalLabel" aria-hidden="true">
+﻿@using DmBuddyMvc.Helpers;
+<div id="creatureNotesModal" class="modal fade" tabindex="-1" aria-labelledby="creatureNotesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,9 +8,24 @@
             </div>
             <div class="modal-body">
                 <span id="creatureNotesModalId" style="display:none"></span>
-                <div class="d-flex justify-content-center">
-                    <textarea id="creatureNotesModalNotes" rows="10" cols="60"></textarea>
-                </div>
+
+                @if (User.IsAtLeastPremium())
+                {
+                    <div class="d-flex justify-content-center">
+                        <img id="creatureNotesModalPic"/>
+                    </div>
+                    <hr/>
+                    <div class="d-flex justify-content-center">
+                        <textarea id="creatureNotesModalNotes" rows="10" cols="60"></textarea>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-center">
+                        <textarea id="creatureNotesModalNotes" rows="10" cols="60"></textarea>
+                    </div>
+                }
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

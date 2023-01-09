@@ -49,7 +49,9 @@
         creaturePictureFileInput.val('');
     }
 
-    
+    export function SetNotesModalPicture(pictureData: string): void {
+        $("#creatureNotesModalPic").attr("src", pictureData);
+    }
 
 }
 
