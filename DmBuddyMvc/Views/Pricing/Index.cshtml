@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Pricing";
+}
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th scope="col" style="width:200px"></th>
+            <th class="text-center" scope="row">Basic</th>
+            <th class="text-center" scope="row">Premium</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">Encounter Tracking</th>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+        </tr>
+
+        <tr>
+            <th scope="row">Encounter Pictures</th>
+            <td class="text-center"></td>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+        </tr>
+
+        <tr>
+            <th scope="row">No Ads</th>
+            <td class="text-center"></td>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+        </tr>
+
+        <tr>
+            <th scope="row">Future Content</th>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+        </tr>
+
+        @*...*@
+
+        <tr>
+            <th scope="row">Price</th>
+            <td class="text-center">Free</td>
+            <td class="text-center">$2/mo</td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="text-center"><a type="button" class="btn btn-primary" asp-action="Checkout">Checkout</a></td>
+        </tr>
+
+        @* Copy format:
+        <tr>
+            <th scope="row"></th>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+            <td class="text-center"><i class="bi bi-check-lg"></i></td>
+        </tr>
+        *@
+
+
+    </tbody>
+</table>
+

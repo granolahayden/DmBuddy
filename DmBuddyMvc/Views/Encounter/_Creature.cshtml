@@ -1,25 +1,32 @@
 ﻿<div style="display:none" id="creatureDisplayId"></div>
-<h3>HP</h3>
-<div class="d-flex justify-content-center">
-    <div class="p-3">
-        <button class="btn btn-outline-danger" onclick="dmb.encounter.DamageFromDisplay()">-</button>
-    </div>
-    <div class="px-2">
-        <p id="creatureDisplayHP" class="h4">--</p>
-        <div class="text-center" style="width:80px">
-            <input type="text" id="DamageOrHealAmountFromDisplay" value="" class="text-center" style="width:100%" />
+<div style="height:fit-content">
+    <div class="pb-4" style="height:150px;">
+        <h3>HP</h3>
+        <div class="d-flex justify-content-center">
+            <div class="p-3">
+                <button class="btn btn-outline-danger" onclick="dmb.encounter.DamageFromDisplay()">-</button>
+            </div>
+            <div class="px-2">
+                <p id="creatureDisplayHP" class="h4">--</p>
+                <div class="text-center" style="width:80px">
+                    <input type="text" id="DamageOrHealAmountFromDisplay" value="" class="text-center" style="width:100%" />
+                </div>
+
+            </div>
+            <div class="p-3">
+                <button class="btn btn-outline-success" onclick="dmb.encounter.HealFromDisplay()">+</button>
+            </div>
         </div>
+    </div>
 
+    <div class="pb-4" style="height:150px">
+        <h3>AC</h3>
+        <p id="creatureDisplayAC" class="h4">--</p>
     </div>
-    <div class="p-3">
-        <button class="btn btn-outline-success" onclick="dmb.encounter.HealFromDisplay()">+</button>
+
+    <div style="height:fit-content">
+        <h3>Notes</h3>
+        <textarea id="creatureDisplayNotes" rows="10" cols="60"></textarea>
     </div>
+
 </div>
-<br/>
-
-<h3>AC</h3>
-<p id="creatureDisplayAC" class="h4">--</p>
-<br/>
-
-<h3>Notes</h3>
-<textarea id="creatureDisplayNotes" rows="10" cols="60"></textarea>

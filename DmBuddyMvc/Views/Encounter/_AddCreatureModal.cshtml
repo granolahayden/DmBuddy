@@ -1,4 +1,5 @@
-﻿<div class="modal fade" id="addCreatureModal" tabindex="-1" aria-labelledby="addCreatureModalLabel" aria-hidden="true">
+﻿@using DmBuddyMvc.Helpers;
+<div class="modal fade" id="addCreatureModal" tabindex="-1" aria-labelledby="addCreatureModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -36,7 +37,7 @@
                         </div>
                     </div>
 
-                    @if(User.IsInRole(IdentityConsts.Roles.Admin) || User.IsInRole(IdentityConsts.Roles.Premium))
+                    @if(User.IsAtLeastPremium())
                     {
                         <div class="mb-3">
                             <label for="creaturePictureInput" class="col-form-label">Creature Picture:</label>

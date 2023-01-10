@@ -25,11 +25,12 @@
 
     const INITIATIVEINDEX: number = 0;
     const NAMEINDEX: number = 1;
-    const ACINDEX: number = 2;
-    const HPINDEX: number = 3;
-    const DAMAGEINPUTINDEX: number = 4;
-    const IDINDEX: number = 5;
-    const DELETEINDEX: number = 6;
+    const NOTESINDEX: number = 2;
+    const ACINDEX: number = 3;
+    const HPINDEX: number = 4;
+    const DAMAGEINPUTINDEX: number = 5;
+    const IDINDEX: number = 6;
+    const DELETEINDEX: number = 7;
 
     const INITIATIVEREGEX = /\d+\.?\d?/g;
 
@@ -81,6 +82,36 @@
 
         $("#creatureDisplayNotes").val("");
         $("#DamageOrHealAmountFromDisplay").val("");
+
+        $('#creatureNotesModal').on('show.bs.modal', function (event: JQueryEventObject) {
+            var button = $(event.relatedTarget);
+            var creatureid = button.data('creatureid');
+            let creature = creatures.find(c => c.Id == Number(creatureid));
+
+            if (GetCurrentCreatureId() == creatureid) {
+                creature.Notes = $("#creatureDisplayNotes").val() as string;
+            }
+            document.getElementById("creatureNotesModalLabel").innerHTML = creature.GetName() + " Notes";
+            document.getElementById("creatureNotesModalId").innerHTML = creature.Id.toString();
+
+            if (dmb.premiumEncounter.IsPremium) {
+                dmb.premiumEncounter.SetNotesModalPicture(creature.PictureData);
+            }
+
+            $("#creatureNotesModalNotes").val(creature.Notes);
+        });
+
+        $('#creatureNotesModal').on('hide.bs.modal', function (event: JQueryEventObject) {
+            let creatureid = Number(document.getElementById("creatureNotesModalId").innerHTML);
+            let creature = creatures.find(c => c.Id == creatureid);
+            let modalNotes = $("#creatureNotesModalNotes").val() as string
+
+            if (GetCurrentCreatureId() == creatureid) {
+                $("#creatureDisplayNotes").val(modalNotes)
+            }
+
+            creature.Notes = modalNotes;
+        });
     }
 
     export function AddCreaturesAndResetForm(): void {
@@ -144,14 +175,16 @@
         creatures.splice(index, 0, creature);
 
         let row = table.getElementsByTagName('tbody')[0].insertRow(index);
+        row.className = 'align-middle';
         row.id = creature.Id + "_row";
         row.insertCell(INITIATIVEINDEX).innerHTML = creature.Initiative.toString();
         row.insertCell(NAMEINDEX).innerHTML = creature.GetName();
+        row.insertCell(NOTESINDEX).innerHTML = "<div class='p-2'><button type='button' class='btn btn-outline-primary' data-bs-toggle='modal' data-bs-target='#creatureNotesModal' data-creatureid='" + creature.Id + "'><i class='bi bi-file-text'></i></button></div>";
         row.insertCell(ACINDEX).innerHTML = creature.AC.toString();
         row.insertCell(HPINDEX).innerHTML = creature.GetHP();
         row.insertCell(DAMAGEINPUTINDEX).innerHTML = "<div class='d-flex flex-row'>" +
             "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.DamageCreatureFromId(" + creature.Id + ")'>-</button></div>" +
-            "<div class='text-center p-2'><input style='width:100%' class='text-center' type='text' id='" + creature.Id + "_DamageOrHealAmountFromTable'/></div>" +
+            "<div class='text-center p-2'><input style='width:40px' class='text-center' type='text' id='" + creature.Id + "_DamageOrHealAmountFromTable'/></div>" +
             "<div class='text-center p-2 align-middle'><button type='button' class='btn btn-success' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ")'>+</button></div></div>";
         row.insertCell(IDINDEX).outerHTML = "<td style='display:none'>" + creature.Id + "</td>";
         row.insertCell(DELETEINDEX).innerHTML = "<div class='p-2'><button type='button' class='btn btn-danger' id='"+creature.Id+"_delete' onclick='dmb.encounter.RemoveFromInitiative(" + creature.Id + ")'><i class='bi bi-trash'></i></button></div>";

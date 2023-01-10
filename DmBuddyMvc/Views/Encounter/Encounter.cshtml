@@ -1,9 +1,10 @@
-﻿@{
+﻿@using DmBuddyMvc.Helpers;
+@{
     ViewData["Title"] = "Encounter";
-    var userIsPremium = User.IsInRole(IdentityConsts.Roles.Admin) || User.IsInRole(IdentityConsts.Roles.Premium);
 }
+<partial name="_AdSense" />
 
-@if(userIsPremium)
+@if(User.IsAtLeastPremium())
 {
     <div class="container text-center">
         <partial name="_CreatureNameBar" />
@@ -28,17 +29,17 @@ else
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCreatureModal">
     Add Creatures
 </button>
+<partial name="_AddCreatureModal" />
 
 <partial name="_CreatureTable" />
-
-<partial name="_AddCreatureModal" />
+<partial name="_CreatureNotesModal" />
 
 
 @section scripts{
     <script src="~/js/encounter.js"></script>
     <script src="~/js/premiumEncounter.js"></script>
 
-    @if(userIsPremium){    
+    @if(User.IsAtLeastPremium()){    
         <script src="~/js/jquery.paste_image_reader.js"></script>
     }
 }

@@ -44,6 +44,10 @@ var dmb;
             creaturePictureFileInput.val('');
         }
         premiumEncounter.ClearPictureInput = ClearPictureInput;
+        function SetNotesModalPicture(pictureData) {
+            $("#creatureNotesModalPic").attr("src", pictureData);
+        }
+        premiumEncounter.SetNotesModalPicture = SetNotesModalPicture;
     })(premiumEncounter = dmb.premiumEncounter || (dmb.premiumEncounter = {}));
 })(dmb || (dmb = {}));
 $(document).ready(function () {
