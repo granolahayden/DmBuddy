@@ -68,15 +68,6 @@ var dmb;
                 }
                 $("#creatureNotesModalNotes").val(creature.Notes);
             });
-            $('#creatureNotesModal').on('hide.bs.modal', function (event) {
-                let creatureid = Number(document.getElementById("creatureNotesModalId").innerHTML);
-                let creature = creatures.find(c => c.Id == creatureid);
-                let modalNotes = $("#creatureNotesModalNotes").val();
-                if (GetCurrentCreatureId() == creatureid) {
-                    $("#creatureDisplayNotes").val(modalNotes);
-                }
-                creature.Notes = modalNotes;
-            });
         }
         encounter.Init = Init;
         function AddCreaturesAndResetForm() {
@@ -255,6 +246,16 @@ var dmb;
             ChangeCreatureHPFromIdByAmount(id, amount);
         }
         encounter.DamageFromDisplay = DamageFromDisplay;
+        function SaveCreatureNotesModal() {
+            let creatureid = Number(document.getElementById("creatureNotesModalId").innerHTML);
+            let creature = creatures.find(c => c.Id == creatureid);
+            let modalNotes = $("#creatureNotesModalNotes").val();
+            if (GetCurrentCreatureId() == creatureid) {
+                $("#creatureDisplayNotes").val(modalNotes);
+            }
+            creature.Notes = modalNotes;
+        }
+        encounter.SaveCreatureNotesModal = SaveCreatureNotesModal;
     })(encounter = dmb.encounter || (dmb.encounter = {}));
 })(dmb || (dmb = {}));
 $(document).ready(function () {

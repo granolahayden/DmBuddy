@@ -16,19 +16,20 @@
                     </div>
                     <hr/>
                     <div class="d-flex justify-content-center">
-                        <textarea id="creatureNotesModalNotes" rows="10" cols="60"></textarea>
+                        <textarea id="creatureNotesModalNotes" rows="10" cols="40"></textarea>
                     </div>
                 }
                 else
                 {
                     <div class="d-flex justify-content-center">
-                        <textarea id="creatureNotesModalNotes" rows="10" cols="60"></textarea>
+                        <textarea id="creatureNotesModalNotes" rows="10" cols="40"></textarea>
                     </div>
                 }
 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="dmb.encounter.SaveCreatureNotesModal()">Save & Close</button>
             </div>
         </div>
     </div>

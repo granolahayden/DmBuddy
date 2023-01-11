@@ -100,18 +100,6 @@
 
             $("#creatureNotesModalNotes").val(creature.Notes);
         });
-
-        $('#creatureNotesModal').on('hide.bs.modal', function (event: JQueryEventObject) {
-            let creatureid = Number(document.getElementById("creatureNotesModalId").innerHTML);
-            let creature = creatures.find(c => c.Id == creatureid);
-            let modalNotes = $("#creatureNotesModalNotes").val() as string
-
-            if (GetCurrentCreatureId() == creatureid) {
-                $("#creatureDisplayNotes").val(modalNotes)
-            }
-
-            creature.Notes = modalNotes;
-        });
     }
 
     export function AddCreaturesAndResetForm(): void {
@@ -317,6 +305,18 @@
         let id = Number(document.getElementById("creatureDisplayId").innerHTML);
 
         ChangeCreatureHPFromIdByAmount(id, amount);
+    } 
+
+    export function SaveCreatureNotesModal(): void {
+        let creatureid = Number(document.getElementById("creatureNotesModalId").innerHTML);
+        let creature = creatures.find(c => c.Id == creatureid);
+        let modalNotes = $("#creatureNotesModalNotes").val() as string
+
+        if (GetCurrentCreatureId() == creatureid) {
+            $("#creatureDisplayNotes").val(modalNotes)
+        }
+
+        creature.Notes = modalNotes;
     }
 }
 
