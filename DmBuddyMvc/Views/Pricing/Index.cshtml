@@ -40,13 +40,16 @@
         <tr>
             <th scope="row">Price</th>
             <td class="text-center">Free</td>
-            <td class="text-center">$2/mo</td>
+            <td class="text-center">$3 per month or $12 for 6 months</td>
         </tr>
 
         <tr>
             <td></td>
             <td></td>
-            <td class="text-center"><a type="button" class="btn btn-primary" asp-action="Checkout">Checkout</a></td>
+            <td class="text-center">
+                <div><a type="button" class="btn btn-primary" asp-action="Checkout">Checkout 1 month</a></div>
+                <div><a type="button" class="btn btn-primary mt-2" asp-action="Checkout6">Checkout 6 months</a></div>
+            </td>
         </tr>
 
         @* Copy format:

@@ -13,11 +13,6 @@ namespace DmBuddyMvc.Controllers
 
         public IActionResult Checkout()
         {
-            if (User.Identity?.Name is null)
-                return Redirect("/Identity/Account/Login");
-            else if(User.IsAtLeastPremium())
-                return Redirect("/Pricing");
-            else
                 return View();
         }
     }

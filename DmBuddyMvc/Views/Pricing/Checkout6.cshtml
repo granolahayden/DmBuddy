@@ -1,38 +1,26 @@
 ﻿@{
     ViewData["Title"] = "Checkout";
 }
-<div class="row">
-    <div class="col-md-8 mb-4 my-md-0">
-        <h1>Checkout: $3</h1>
-        <p>Thanks for checking out 1 month of DmBuddy Premium! Your account will be upgraded once the payment is completed.</p>
-        <p>Payments like this keep this site alive. Good hosting is expensive and web developement takes a lot of time, and since this site is entirely maintained and built by 1 person, your contribution makes this possible for me. Thanks!</p>
-    </div>
-    <div class="col-md-4 my-md-0 border-start">
-        <div id="smart-button-container">
-            <div style="text-align: center;">
-                <div id="paypal-button-container"></div>
-            </div>
-        </div>
+<div id="smart-button-container">
+    <div style="text-align: center;">
+        <div id="paypal-button-container"></div>
     </div>
 </div>
-
-
-
-<script src="https://www.paypal.com/sdk/js?client-id=AWYFTUuSoKdonNTQxCZNbBh3atcOAwEzoMW48VFiNAEGd3MpJCj75S9iuBxgr4FXxwDV0Mjie_cDXasq&enable-funding=venmo&currency=USD" data-sdk-integration-source="button-factory"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=sb&enable-funding=venmo&currency=USD" data-sdk-integration-source="button-factory"></script>
 <script>
     function initPayPalButton() {
         paypal.Buttons({
             style: {
-                shape: 'pill',
+                shape: 'rect',
                 color: 'gold',
                 layout: 'vertical',
-                label: 'pay',
+                label: 'paypal',
 
             },
 
             createOrder: function (data, actions) {
                 return actions.order.create({
-                    purchase_units: [{ "amount": { "currency_code": "USD", "value": 3 } }]
+                    purchase_units: [{ "amount": { "currency_code": "USD", "value": 2 } }]
                 });
             },
 
