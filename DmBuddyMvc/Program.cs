@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using DmBuddyMvc.Areas.Identity.Data;
 using DmBuddyMvc.Services;
+using DmBuddyDatabase;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DmBuddyConnectionString");
@@ -14,8 +15,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Add services to the container.
-builder.Services.AddScoped<EmailService>();
+builder.Services.AddDbContext<Database>(options => options.UseSqlServer(connectionString));
+builder.Services.AddScoped<EmailServices>();
 builder.Services.AddTransient<EncounterServices>();
+builder.Services.AddTransient<AccountServices>();
 
 builder.Services.AddControllersWithViews();
 

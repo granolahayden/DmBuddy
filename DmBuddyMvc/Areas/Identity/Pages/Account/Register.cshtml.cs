@@ -31,14 +31,14 @@ namespace DmBuddyMvc.Areas.Identity.Pages.Account
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly EmailService _emailService;
+        private readonly EmailServices _emailService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            EmailService emailService)
+            EmailServices emailService)
         {
             _userManager = userManager;
             _userStore = userStore;

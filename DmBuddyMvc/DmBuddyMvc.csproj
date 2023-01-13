@@ -39,4 +39,8 @@
     <Folder Include="Views\Demos\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DmBuddyDatabase\DmBuddyDatabase.csproj" />
+  </ItemGroup>
+
 </Project>

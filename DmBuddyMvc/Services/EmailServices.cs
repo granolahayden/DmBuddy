@@ -3,11 +3,11 @@ using System.Net.Mail;
 
 namespace DmBuddyMvc.Services
 {
-    public class EmailService
+    public class EmailServices
     {
         private const string FROM = "dmbuddy.service@gmail.com";
         private readonly SmtpClient _smtpclient;
-        public EmailService(IConfiguration config)
+        public EmailServices(IConfiguration config)
         {
             _smtpclient = new SmtpClient("smtp.gmail.com", 587)
             {

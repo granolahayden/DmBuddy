@@ -1,6 +1,4 @@
-﻿using DmBuddyMvc.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace DmBuddyMvc.Controllers
 {
@@ -13,7 +11,10 @@ namespace DmBuddyMvc.Controllers
 
         public IActionResult Checkout()
         {
+            if (User.Identity?.IsAuthenticated == true)
                 return View();
+            else
+                return Redirect("/Identity/Account/Login");
         }
     }
 }

@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 namespace DmBuddyDatabase
 {
-    public partial class TblLogins
+    public partial class LoginTerminations
     {
-        public Guid LoginId { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Access { get; set; }
         public DateTime? TerminationDate { get; set; }
+        public string RoleId { get; set; }
+        public string LoginId { get; set; }
+
+        public virtual AspNetUsers Login { get; set; }
+        public virtual AspNetRoles Role { get; set; }
     }
 }

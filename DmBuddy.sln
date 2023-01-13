@@ -3,9 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DmBuddyMvc", "DmBuddyMvc\DmBuddyMvc.csproj", "{F487E4E0-6729-4DED-8ACB-D5502394DF27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DmBuddyMvc", "DmBuddyMvc\DmBuddyMvc.csproj", "{F487E4E0-6729-4DED-8ACB-D5502394DF27}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7947E495-47D6-45B2-A7A7-CF276F37A8D0} = {7947E495-47D6-45B2-A7A7-CF276F37A8D0}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DmBuddyDatabase", "DmBuddyDatabase\DmBuddyDatabase.csproj", "{7947E495-47D6-45B2-A7A7-CF276F37A8D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DmBuddyDatabase", "DmBuddyDatabase\DmBuddyDatabase.csproj", "{7947E495-47D6-45B2-A7A7-CF276F37A8D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
