@@ -7,6 +7,11 @@ namespace DmBuddyDatabase
 {
     public partial class AspNetUsers
     {
+        public AspNetUsers()
+        {
+            AspNetUserRoles = new HashSet<AspNetUserRoles>();
+        }
+
         public string Id { get; set; }
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }
@@ -24,5 +29,6 @@ namespace DmBuddyDatabase
         public int AccessFailedCount { get; set; }
 
         public virtual LoginTerminations LoginTerminations { get; set; }
+        public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
     }
 }

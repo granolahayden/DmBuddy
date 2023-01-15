@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using NuGet.Packaging;
+using DmBuddyMvc.Services;
 
 namespace DmBuddyMvc.Areas.Identity.Pages.Account
 {

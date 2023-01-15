@@ -1,5 +1,7 @@
 ﻿@page
+@using DmBuddyMvc.Services;
 @model IndexModel
+@inject AccountServices _accountServices
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
@@ -25,6 +27,7 @@
     </div>
     <div class="border-start col-md-6">
         <h4>Subscription</h4>
+        <p>@(await _accountServices.GetRoleAndTerminationDateFromUserAsync(User))</p>
     </div>
 </div>
 

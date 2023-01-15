@@ -9,6 +9,7 @@ namespace DmBuddyDatabase
     {
         public AspNetRoles()
         {
+            AspNetUserRoles = new HashSet<AspNetUserRoles>();
             LoginTerminations = new HashSet<LoginTerminations>();
         }
 
@@ -17,6 +18,7 @@ namespace DmBuddyDatabase
         public string NormalizedName { get; set; }
         public string ConcurrencyStamp { get; set; }
 
+        public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual ICollection<LoginTerminations> LoginTerminations { get; set; }
     }
 }

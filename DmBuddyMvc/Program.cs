@@ -12,13 +12,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager<DMBSignInManager>();
 
 // Add services to the container.
 builder.Services.AddDbContext<Database>(options => options.UseSqlServer(connectionString));
 builder.Services.AddScoped<EmailServices>();
 builder.Services.AddTransient<EncounterServices>();
 builder.Services.AddTransient<AccountServices>();
+builder.Services.AddTransient<UserManager<ApplicationUser>, DMBUserManager>();
 
 builder.Services.AddControllersWithViews();
 

@@ -1,9 +1,14 @@
-﻿@{
+﻿@using DmBuddyMvc.Services;
+@inject AccountServices _accountServices
+@{
     ViewData["Title"] = "Checkout";
+    var terminfo = await _accountServices.GetRoleAndTerminationDateFromUserAsync(User);
 }
+
 <div class="row">
     <div class="col-md-8 mb-4 my-md-0">
         <h1>Checkout: $3</h1>
+        <h2>@terminfo</h2>
         <p>Thanks for checking out 1 month of DmBuddy Premium! Your account will be upgraded once the payment is completed.</p>
         <p>Payments like this keep this site alive. Good hosting is expensive and web developement takes a lot of time, and since this site is entirely maintained and built by 1 person, your contribution makes this possible for me. Thanks!</p>
     </div>
@@ -14,6 +19,10 @@
             </div>
         </div>
     </div>
+    <form method="post">
+        <input type="hidden" id="id" value="1"/>
+        <button type="submit" class="btn btn-primary">Add Premium</button>
+    </form>
 </div>
 
 
