@@ -1,6 +1,5 @@
 ﻿using DmBuddyMvc.Models;
 using DmBuddyMvc.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -9,9 +8,9 @@ namespace DmBuddyMvc.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly EmailService _emailService;
+        private readonly EmailServices _emailService;
 
-        public HomeController(ILogger<HomeController> logger, EmailService emailService)
+        public HomeController(ILogger<HomeController> logger, EmailServices emailService)
         {
             _logger = logger;
             _emailService = emailService;

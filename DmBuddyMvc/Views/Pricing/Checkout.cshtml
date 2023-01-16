@@ -1,26 +1,44 @@
-﻿@{
+﻿@using DmBuddyMvc.Services;
+@inject AccountServices _accountServices
+@{
     ViewData["Title"] = "Checkout";
+    var terminfo = await _accountServices.GetRoleAndTerminationDateFromUserAsync(User);
 }
-<div id="smart-button-container">
-    <div style="text-align: center;">
-        <div id="paypal-button-container"></div>
+
+<div class="row">
+    <div class="col-md-8 mb-4 my-md-0">
+        <h1>Add 1 month of Premium: $3</h1>
+        <h2>Current Subscription: @terminfo</h2>
+        <p>Thanks for checking out DmBuddy Premium! Your account will be upgraded once the payment is completed.</p>
+        <p>Payments like this keep this site alive. Good hosting is expensive and web developement takes a lot of time</p>
+        <p>This website is entirely developed by one person and, while I'm happy to write the code and manage the website out of good will, I cannot afford to host this entirely out of my own pocket. Thank you for your contribution!</p>
+    </div>
+    <div class="col-md-4 my-md-0 border-start">
+        <div id="smart-button-container">
+            <div style="text-align: center;">
+                <div id="paypal-button-container"></div>
+            </div>
+        </div>
     </div>
 </div>
-<script src="https://www.paypal.com/sdk/js?client-id=sb&enable-funding=venmo&currency=USD" data-sdk-integration-source="button-factory"></script>
+
+
+
+<script src="https://www.paypal.com/sdk/js?client-id=AWYFTUuSoKdonNTQxCZNbBh3atcOAwEzoMW48VFiNAEGd3MpJCj75S9iuBxgr4FXxwDV0Mjie_cDXasq&enable-funding=venmo&currency=USD" data-sdk-integration-source="button-factory"></script>
 <script>
     function initPayPalButton() {
         paypal.Buttons({
             style: {
-                shape: 'rect',
+                shape: 'pill',
                 color: 'gold',
                 layout: 'vertical',
-                label: 'paypal',
+                label: 'pay',
 
             },
 
             createOrder: function (data, actions) {
                 return actions.order.create({
-                    purchase_units: [{ "amount": { "currency_code": "USD", "value": 2 } }]
+                    purchase_units: [{ "amount": { "currency_code": "USD", "value": 3 } }]
                 });
             },
 
@@ -35,7 +53,7 @@
                     element.innerHTML = '';
                     element.innerHTML = '<h3>Thank you for your payment!</h3>';
 
-                    // Or go to another URL:  actions.redirect('thank_you.html');
+                    AddPremium(1);
 
                 });
             },
@@ -46,4 +64,13 @@
         }).render('#paypal-button-container');
     }
     initPayPalButton();
+
+    function AddPremium(monthstoadd){
+        $.post("/pricing/checkout", { months: monthstoadd }, function(result){
+            window.location = "/Identity/Account/Login?returnUrl=/Pricing/Thanks"
+        })
+        .fail(function(){
+            window.location = "/Pricing/Help";
+        });
+    }
 </script>

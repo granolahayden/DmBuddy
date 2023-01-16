@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using NuGet.Packaging;
+using DmBuddyMvc.Services;
 
 namespace DmBuddyMvc.Areas.Identity.Pages.Account
 {
@@ -91,6 +92,14 @@ namespace DmBuddyMvc.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if(returnUrl == "/Pricing/Thanks")
+            {
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                await _signInManager.RefreshSignInAsync(user);
+                ReturnUrl= returnUrl;
+                return;
+            }
+
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
