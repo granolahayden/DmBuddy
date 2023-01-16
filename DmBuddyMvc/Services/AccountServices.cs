@@ -1,5 +1,4 @@
 ﻿using DmBuddyDatabase;
-using DmBuddyMvc.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Principal;
 
@@ -24,7 +23,7 @@ namespace DmBuddyMvc.Services
             if (loginterm == null || loginterm.TerminationDate < DateTime.UtcNow)
                 return "No current subscription.";
             else
-                return $"{loginterm.Role.Name}{(loginterm.TerminationDate == null ? "" : $" until {((DateTime)loginterm.TerminationDate).ToShortDateString()}")}";
+                return $"{loginterm.Role.Name} until {loginterm.TerminationDate.ToShortDateString()}";
         }
 
         private IQueryable<AspNetUsers> GetLoginAsQueryable(IPrincipal user)
@@ -39,21 +38,26 @@ namespace DmBuddyMvc.Services
             try
             {
                 var login = await GetLoginAsQueryable(user).Include(nu => nu.AspNetUserRoles).Include(nu => nu.LoginTerminations).FirstOrDefaultAsync();
-                if (login is null)
+                if (login == null)
                     throw new Exception();
 
                 var todaysdate = DateTime.UtcNow.Date;
 
-                var logintermination = login.LoginTerminations ?? new LoginTerminations { LoginId = login.Id, RoleId = PREMIUMID, TerminationDate = todaysdate };
-                if (logintermination.TerminationDate is null || logintermination.TerminationDate < todaysdate)
+                var logintermination = login.LoginTerminations;
+                if (logintermination == null)
+                {
+                    logintermination = new LoginTerminations { LoginId = login.Id, RoleId = PREMIUMID, TerminationDate = todaysdate };
+                    _db.LoginTerminations.Add(logintermination);
+                }
+                    
+
+                if (logintermination.TerminationDate < todaysdate)
                     logintermination.TerminationDate = todaysdate;
 
-                logintermination.TerminationDate = logintermination.TerminationDate.Value.AddMonths(1);
+                logintermination.TerminationDate = logintermination.TerminationDate.AddMonths(monthstoadd);
 
                 if (!login.AspNetUserRoles.Where(ur => ur.RoleId == PREMIUMID).Any())
-                    login.AspNetUserRoles.Add(new AspNetUserRoles { RoleId = PREMIUMID });
-
-                _db.LoginTerminations.Update(logintermination);
+                    _db.AspNetUserRoles.Add(new AspNetUserRoles { RoleId = PREMIUMID, UserId = login.Id });
 
                 await _db.SaveChangesAsync();
 
@@ -61,7 +65,7 @@ namespace DmBuddyMvc.Services
             }
             catch
             {
-                return true;
+                return false;
             }
         }
     }

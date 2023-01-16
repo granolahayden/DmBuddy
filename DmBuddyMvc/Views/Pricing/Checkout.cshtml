@@ -7,10 +7,11 @@
 
 <div class="row">
     <div class="col-md-8 mb-4 my-md-0">
-        <h1>Checkout: $3</h1>
-        <h2>@terminfo</h2>
-        <p>Thanks for checking out 1 month of DmBuddy Premium! Your account will be upgraded once the payment is completed.</p>
-        <p>Payments like this keep this site alive. Good hosting is expensive and web developement takes a lot of time, and since this site is entirely maintained and built by 1 person, your contribution makes this possible for me. Thanks!</p>
+        <h1>Add 1 month of Premium: $3</h1>
+        <h2>Current Subscription: @terminfo</h2>
+        <p>Thanks for checking out DmBuddy Premium! Your account will be upgraded once the payment is completed.</p>
+        <p>Payments like this keep this site alive. Good hosting is expensive and web developement takes a lot of time</p>
+        <p>This website is entirely developed by one person and, while I'm happy to write the code and manage the website out of good will, I cannot afford to host this entirely out of my own pocket. Thank you for your contribution!</p>
     </div>
     <div class="col-md-4 my-md-0 border-start">
         <div id="smart-button-container">
@@ -19,10 +20,6 @@
             </div>
         </div>
     </div>
-    <form method="post">
-        <input type="hidden" id="id" value="1"/>
-        <button type="submit" class="btn btn-primary">Add Premium</button>
-    </form>
 </div>
 
 
@@ -56,7 +53,7 @@
                     element.innerHTML = '';
                     element.innerHTML = '<h3>Thank you for your payment!</h3>';
 
-                    // Or go to another URL:  actions.redirect('thank_you.html');
+                    AddPremium(1);
 
                 });
             },
@@ -67,4 +64,13 @@
         }).render('#paypal-button-container');
     }
     initPayPalButton();
+
+    function AddPremium(monthstoadd){
+        $.post("/pricing/checkout", { months: monthstoadd }, function(result){
+            window.location = "/Identity/Account/Login?returnUrl=/Pricing/Thanks"
+        })
+        .fail(function(){
+            window.location = "/Pricing/Help";
+        });
+    }
 </script>

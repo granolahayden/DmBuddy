@@ -1,17 +1,13 @@
-﻿using DmBuddyMvc.Areas.Identity.Data;
-using DmBuddyMvc.Services;
+﻿using DmBuddyMvc.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Principal;
 
 namespace DmBuddyMvc.Controllers
 {
     public class PricingController : Controller
     {
         private readonly AccountServices _accountservices;
-        private readonly DMBSignInManager _signinmanager;
-        private readonly DMBUserManager _usermanager;
+
         public PricingController(AccountServices accountservices)
         {
             _accountservices = accountservices;
@@ -31,19 +27,22 @@ namespace DmBuddyMvc.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Checkout(int id)
+        public async Task<IActionResult> Checkout(int months)
         {
-            TempData["PurchaseMessage"] = "Thanks for ...";
-            var result = await _accountservices.AddPremiumSubscriptionToUserForMonths(User, 1);
+            TempData["PurchaseMessage"] = "Thanks for your purchase! Your account has been upgraded to Premium. You can view your subscription details by clicking on your username.";
+            var result = await _accountservices.AddPremiumSubscriptionToUserForMonths(User, months);
             if (result == false)
-                RedirectToAction("Checkout");
+                return StatusCode(StatusCodes.Status500InternalServerError);
 
-            var user = await _usermanager.GetApplicationUserFromPrincipalAsync(User);
-            await _signinmanager.RefreshSignInAsync(user);
-            return RedirectToAction("Thanks");
+            return Ok();
         }
 
         public IActionResult Thanks()
+        {
+            return View();
+        }
+
+        public IActionResult Help()
         {
             return View();
         }

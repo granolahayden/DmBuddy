@@ -1,6 +1,5 @@
 ﻿using DmBuddyMvc.Models;
 using DmBuddyMvc.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

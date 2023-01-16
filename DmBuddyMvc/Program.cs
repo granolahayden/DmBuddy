@@ -20,7 +20,6 @@ builder.Services.AddDbContext<Database>(options => options.UseSqlServer(connecti
 builder.Services.AddScoped<EmailServices>();
 builder.Services.AddTransient<EncounterServices>();
 builder.Services.AddTransient<AccountServices>();
-builder.Services.AddTransient<UserManager<ApplicationUser>, DMBUserManager>();
 
 builder.Services.AddControllersWithViews();
 

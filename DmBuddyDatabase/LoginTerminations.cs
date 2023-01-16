@@ -7,7 +7,7 @@ namespace DmBuddyDatabase
 {
     public partial class LoginTerminations
     {
-        public DateTime? TerminationDate { get; set; }
+        public DateTime TerminationDate { get; set; }
         public string RoleId { get; set; }
         public string LoginId { get; set; }
 
