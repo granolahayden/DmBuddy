@@ -3,15 +3,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace DmBuddyDatabase
-{
-    public partial class LoginTerminations
-    {
-        public DateTime TerminationDate { get; set; }
-        public string RoleId { get; set; }
-        public string LoginId { get; set; }
+namespace DmBuddyDatabase;
 
-        public virtual AspNetUsers Login { get; set; }
-        public virtual AspNetRoles Role { get; set; }
-    }
+public partial class LoginTerminations
+{
+    public DateTime TerminationDate { get; set; }
+
+    public string RoleId { get; set; }
+
+    public string LoginId { get; set; }
+
+    public virtual AspNetUsers Login { get; set; }
+
+    public virtual AspNetRoles Role { get; set; }
 }
