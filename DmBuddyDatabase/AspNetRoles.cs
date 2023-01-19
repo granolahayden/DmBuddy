@@ -3,22 +3,19 @@
 using System;
 using System.Collections.Generic;
 
-namespace DmBuddyDatabase
+namespace DmBuddyDatabase;
+
+public partial class AspNetRoles
 {
-    public partial class AspNetRoles
-    {
-        public AspNetRoles()
-        {
-            AspNetUserRoles = new HashSet<AspNetUserRoles>();
-            LoginTerminations = new HashSet<LoginTerminations>();
-        }
+    public string Id { get; set; }
 
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string NormalizedName { get; set; }
-        public string ConcurrencyStamp { get; set; }
+    public string Name { get; set; }
 
-        public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
-        public virtual ICollection<LoginTerminations> LoginTerminations { get; set; }
-    }
+    public string NormalizedName { get; set; }
+
+    public string ConcurrencyStamp { get; set; }
+
+    public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; } = new List<AspNetUserRoles>();
+
+    public virtual ICollection<LoginTerminations> LoginTerminations { get; } = new List<LoginTerminations>();
 }

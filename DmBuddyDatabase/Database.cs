@@ -3,98 +3,83 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace DmBuddyDatabase
+namespace DmBuddyDatabase;
+
+public partial class Database : DbContext
 {
-    public partial class Database : DbContext
+    public Database(DbContextOptions<Database> options)
+        : base(options)
     {
-        public Database()
-        {
-        }
-
-        public Database(DbContextOptions<Database> options)
-            : base(options)
-        {
-        }
-
-        public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
-        public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
-        public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
-        public virtual DbSet<LoginTerminations> LoginTerminations { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<AspNetRoles>(entity =>
-            {
-                entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedName] IS NOT NULL)");
-
-                entity.Property(e => e.Name).HasMaxLength(256);
-
-                entity.Property(e => e.NormalizedName).HasMaxLength(256);
-            });
-
-            modelBuilder.Entity<AspNetUserRoles>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.RoleId });
-
-                entity.HasIndex(e => e.RoleId, "IX_AspNetUserRoles_RoleId");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.AspNetUserRoles)
-                    .HasForeignKey(d => d.RoleId);
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.AspNetUserRoles)
-                    .HasForeignKey(d => d.UserId);
-            });
-
-            modelBuilder.Entity<AspNetUsers>(entity =>
-            {
-                entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
-
-                entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
-
-                entity.Property(e => e.Email).HasMaxLength(256);
-
-                entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
-
-                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
-
-                entity.Property(e => e.UserName).HasMaxLength(256);
-            });
-
-            modelBuilder.Entity<LoginTerminations>(entity =>
-            {
-                entity.HasKey(e => e.LoginId)
-                    .HasName("PK__LoginTer__4DDA2818A7CE27A4");
-
-                entity.Property(e => e.RoleId)
-                    .IsRequired()
-                    .HasMaxLength(450);
-
-                entity.Property(e => e.TerminationDate).HasColumnType("date");
-
-                entity.HasOne(d => d.Login)
-                    .WithOne(p => p.LoginTerminations)
-                    .HasForeignKey<LoginTerminations>(d => d.LoginId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__LoginTerm__Login__1BC821DD");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.LoginTerminations)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__LoginTerm__RoleI__1AD3FDA4");
-            });
-
-            OnModelCreatingPartial(modelBuilder);
-        }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
+
+    public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
+
+    public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
+
+    public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+
+    public virtual DbSet<LoginTerminations> LoginTerminations { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AspNetRoles>(entity =>
+        {
+            entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
+                .IsUnique()
+                .HasFilter("([NormalizedName] IS NOT NULL)");
+
+            entity.Property(e => e.Name).HasMaxLength(256);
+            entity.Property(e => e.NormalizedName).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<AspNetUserRoles>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.RoleId });
+
+            entity.HasIndex(e => e.RoleId, "IX_AspNetUserRoles_RoleId");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.AspNetUserRoles).HasForeignKey(d => d.RoleId);
+
+            entity.HasOne(d => d.User).WithMany(p => p.AspNetUserRoles).HasForeignKey(d => d.UserId);
+        });
+
+        modelBuilder.Entity<AspNetUsers>(entity =>
+        {
+            entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
+
+            entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
+                .IsUnique()
+                .HasFilter("([NormalizedUserName] IS NOT NULL)");
+
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+            entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+            entity.Property(e => e.UserName).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<LoginTerminations>(entity =>
+        {
+            entity.HasKey(e => e.LoginId).HasName("PK__LoginTer__4DDA2818A7CE27A4");
+
+            entity.Property(e => e.RoleId)
+                .IsRequired()
+                .HasMaxLength(450);
+            entity.Property(e => e.TerminationDate).HasColumnType("date");
+
+            entity.HasOne(d => d.Login).WithOne(p => p.LoginTerminations)
+                .HasForeignKey<LoginTerminations>(d => d.LoginId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__LoginTerm__Login__1BC821DD");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.LoginTerminations)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__LoginTerm__RoleI__1AD3FDA4");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
