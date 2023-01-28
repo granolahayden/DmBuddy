@@ -2,15 +2,36 @@ var dmb;
 (function (dmb) {
     var encounter;
     (function (encounter) {
+        class CreatureTemplate {
+            GetName() {
+                if (this.NameCount > 1)
+                    return this.Name + " (" + this.NameCount + ")";
+                else
+                    return this.Name;
+            }
+        }
+        encounter.CreatureTemplate = CreatureTemplate;
         class Creature {
+            constructor(template, templateIndex) {
+                this.Id = id++;
+                this.CurrentHP = template.MaxHP;
+                this.Notes = template.DefaultNotes;
+                this.CreatureIndex = Number(templateIndex);
+            }
             GetHP() {
-                return this.CurrentHP.toString() + "/" + this.MaxHP.toString();
+                return this.CurrentHP.toString() + "/" + this.GetCreatureTemplate().MaxHP.toString();
+            }
+            GetAC() {
+                return this.GetCreatureTemplate().AC;
+            }
+            GetCreatureTemplate() {
+                return creatureTemplates[this.CreatureIndex];
             }
             GetName() {
                 if (this.NameCount > 1)
-                    return this.Name + " - " + this.NameCount;
+                    return this.GetCreatureTemplate().GetName() + " - " + this.NameCount;
                 else
-                    return this.Name;
+                    return this.GetCreatureTemplate().GetName();
             }
         }
         const INITIATIVEINDEX = 0;
@@ -21,11 +42,12 @@ var dmb;
         const DAMAGEINPUTINDEX = 5;
         const IDINDEX = 6;
         const DELETEINDEX = 7;
-        const INITIATIVEREGEX = /\d+\.?\d?/g;
+        encounter.INITIATIVEREGEX = /\d+\.?\d?/g;
         const HPCHANGEDISPLAYID = "DamageOrHealAmountFromDisplay";
         const SELECTEDROWCLASS = "bg-warning";
         function Init() {
             creatures = [];
+            creatureTemplates = [];
             id = 0;
             nameInput = $("#creatureNameInput");
             acInput = $("#creatureACInput");
@@ -64,90 +86,83 @@ var dmb;
                 document.getElementById("creatureNotesModalLabel").innerHTML = creature.GetName() + " Notes";
                 document.getElementById("creatureNotesModalId").innerHTML = creature.Id.toString();
                 if (dmb.premiumEncounter.IsPremium) {
-                    dmb.premiumEncounter.SetNotesModalPicture(creature.PictureData);
+                    dmb.premiumEncounter.SetNotesModalPicture(creature.GetCreatureTemplate().PictureData);
                 }
                 $("#creatureNotesModalNotes").val(creature.Notes);
             });
         }
         encounter.Init = Init;
         function AddCreaturesAndResetForm() {
-            AddCreatures();
+            CreateTemplateFromInput();
+            let initiatives = initiativeInput.val().toString().match(encounter.INITIATIVEREGEX);
+            if (initiatives.length < 1)
+                return;
+            AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
             ClearCreatureForm();
         }
         encounter.AddCreaturesAndResetForm = AddCreaturesAndResetForm;
-        function AddCreatures() {
-            let initiatives = initiativeInput.val().toString().match(INITIATIVEREGEX);
-            if (initiatives.length < 1)
-                return;
+        function CreateTemplateFromInput() {
+            let template = new CreatureTemplate();
+            template.Name = nameInput.val();
+            template.AC = Number(acInput.val());
+            template.MaxHP = Number(hpInput.val());
+            template.DefaultNotes = notesInput.val();
+            template.NameCount = creatureTemplates.filter(ct => ct.Name == template.Name).length + 1;
+            if (dmb.premiumEncounter.IsPremium)
+                template.PictureData = dmb.premiumEncounter.GetPictureValue();
+            dmb.library.InsertTemplateToTable(template, creatureTemplates.length);
+            creatureTemplates.push(template);
+        }
+        function AddCreaturesFromTemplateIndex(index, initiatives) {
+            let template = creatureTemplates[index];
             let nameCount = 0;
-            let creaturesWithSameName = creatures.filter(c => c.Name == nameInput.val());
+            let creaturesWithSameName = creatures.filter(c => c.GetCreatureTemplate().GetName() == template.GetName());
             creaturesWithSameName.forEach(c => { if (Number(nameCount) < Number(c.NameCount))
                 nameCount = c.NameCount; });
-            let name = nameInput.val();
-            let ac = Number(acInput.val());
-            let hp = Number(hpInput.val());
-            let notes = notesInput.val();
             for (let i = 0; i < initiatives.length; i++) {
-                let creature = new Creature();
-                creature.Name = name;
-                creature.Id = id++;
+                let creature = new Creature(template, index);
                 creature.NameCount = ++nameCount;
                 creature.Initiative = Number(initiatives[i]);
-                creature.AC = ac;
-                creature.CurrentHP = hp;
-                creature.MaxHP = hp;
-                creature.Notes = notes;
-                if (dmb.premiumEncounter.IsPremium) {
-                    creature.PictureData = dmb.premiumEncounter.GetPictureValue();
-                }
                 AddCreature(creature);
             }
         }
-        encounter.AddCreatures = AddCreatures;
+        encounter.AddCreaturesFromTemplateIndex = AddCreaturesFromTemplateIndex;
         function AddCreature(creature) {
             var table = document.getElementById("initiativeTable");
-            if (creatures.length == 0) {
-                InsertCreatureIntoTableAtIndex(creature, table, 0);
-                return;
-            }
-            let i;
-            for (i = 0; i < creatures.length; i++) {
-                if (Number(creature.Initiative) > Number(creatures[i].Initiative)) {
-                    InsertCreatureIntoTableAtIndex(creature, table, i);
-                    return;
-                }
-            }
-            InsertCreatureIntoTableAtIndex(creature, table, i);
+            let insertIndex = GetCreatureInsertIndex(creature);
+            creatures.splice(insertIndex, 0, creature);
+            InsertCreatureIntoTableAtIndex(creature, table, insertIndex);
         }
         encounter.AddCreature = AddCreature;
+        function GetCreatureInsertIndex(creature) {
+            let i;
+            for (i = 0; i < creatures.length; i++) {
+                if (Number(creature.Initiative > Number(creatures[i].Initiative))) {
+                    break;
+                }
+            }
+            return i;
+        }
         function InsertCreatureIntoTableAtIndex(creature, table, index) {
-            creatures.splice(index, 0, creature);
             let row = table.getElementsByTagName('tbody')[0].insertRow(index);
             row.className = 'align-middle';
             row.id = creature.Id + "_row";
             row.insertCell(INITIATIVEINDEX).innerHTML = creature.Initiative.toString();
             row.insertCell(NAMEINDEX).innerHTML = creature.GetName();
             row.insertCell(NOTESINDEX).innerHTML = "<div class='p-2'><button type='button' class='btn btn-outline-primary' data-bs-toggle='modal' data-bs-target='#creatureNotesModal' data-creatureid='" + creature.Id + "'><i class='bi bi-file-text'></i></button></div>";
-            row.insertCell(ACINDEX).innerHTML = creature.AC.toString();
+            row.insertCell(ACINDEX).innerHTML = creature.GetAC().toString();
             row.insertCell(HPINDEX).innerHTML = creature.GetHP();
             row.insertCell(DAMAGEINPUTINDEX).innerHTML = "<div class='d-flex flex-row'>" +
-                "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.DamageCreatureFromId(" + creature.Id + ")'>-</button></div>" +
+                "<div class='text-center p-2'><button type='button' class='btn btn-danger' onclick='dmb.encounter.DamageCreatureFromId(" + creature.Id + "); dmb.encounter.ClearDamageOrHealInput(" + creature.Id + ")'>-</button></div>" +
                 "<div class='text-center p-2'><input style='width:40px' class='text-center' type='text' id='" + creature.Id + "_DamageOrHealAmountFromTable'/></div>" +
-                "<div class='text-center p-2 align-middle'><button type='button' class='btn btn-success' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + ")'>+</button></div></div>";
+                "<div class='text-center p-2 align-middle'><button type='button' class='btn btn-success' onclick='dmb.encounter.HealCreatureFromId(" + creature.Id + "); dmb.encounter.ClearDamageOrHealInput(" + creature.Id + ")'>+</button></div></div>";
             row.insertCell(IDINDEX).outerHTML = "<td style='display:none'>" + creature.Id + "</td>";
-            row.insertCell(DELETEINDEX).innerHTML = "<div class='p-2'><button type='button' class='btn btn-danger' id='" + creature.Id + "_delete' onclick='dmb.encounter.RemoveFromInitiative(" + creature.Id + ")'><i class='bi bi-trash'></i></button></div>";
+            row.insertCell(DELETEINDEX).innerHTML = "<div class='p-2'><button type='button' class='btn btn-danger' id='" + creature.Id + "_delete' " + "onclick='dmb.encounter.RemoveFromInitiative(" + creature.Id + ")'><i class='bi bi-trash'></i></button></div>";
         }
-        function ClearCreatureForm() {
-            nameInput.val("");
-            acInput.val("");
-            hpInput.val("");
-            initiativeInput.val("");
-            notesInput.val("");
-            if (dmb.premiumEncounter.IsPremium)
-                dmb.premiumEncounter.ClearPictureInput();
-            nameInput.focus();
+        function ClearDamageOrHealInput(id) {
+            $("#" + id + "_DamageOrHealAmountFromTable").val('');
         }
-        encounter.ClearCreatureForm = ClearCreatureForm;
+        encounter.ClearDamageOrHealInput = ClearDamageOrHealInput;
         function HealCreatureFromId(id) {
             let amount = Number($("#" + id + "_DamageOrHealAmountFromTable").val());
             ChangeCreatureHPFromIdByAmount(id, amount);
@@ -175,6 +190,17 @@ var dmb;
             creatures.splice(deleteIndex, 1);
         }
         encounter.RemoveFromInitiative = RemoveFromInitiative;
+        function ClearCreatureForm() {
+            nameInput.val("");
+            acInput.val("");
+            hpInput.val("");
+            initiativeInput.val("");
+            notesInput.val("");
+            if (dmb.premiumEncounter.IsPremium)
+                dmb.premiumEncounter.ClearPictureInput();
+            nameInput.focus();
+        }
+        encounter.ClearCreatureForm = ClearCreatureForm;
         function ShowNextCreature() {
             if (creatures.length == 0) {
                 return;
@@ -194,6 +220,17 @@ var dmb;
         function GetCurrentCreatureId() {
             return document.getElementById("creatureDisplayId").innerHTML == "" ? null : Number(document.getElementById("creatureDisplayId").innerHTML);
         }
+        function FillCreatureDisplay(creature) {
+            document.getElementById("creatureDisplayName").innerHTML = creature.GetName();
+            document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
+            document.getElementById("creatureDisplayAC").innerHTML = creature.GetAC().toString();
+            $("#creatureDisplayNotes").val(creature.Notes);
+            document.getElementById("creatureDisplayId").innerHTML = creature.Id.toString();
+            if (dmb.premiumEncounter.IsPremium) {
+                dmb.premiumEncounter.SetPictureData(creature.GetCreatureTemplate().PictureData);
+            }
+            SelectRow(creature.Id);
+        }
         function SaveCurrentCreatureThenLoadNext(currentcreature, nextcreature) {
             DeselectRow(currentcreature.Id);
             currentcreature.Notes = $("#creatureDisplayNotes").val();
@@ -202,17 +239,6 @@ var dmb;
         function DeselectRow(creatureid) {
             $("#" + creatureid + "_delete").prop("disabled", false);
             $(document.getElementById(creatureid + "_row")).removeClass(SELECTEDROWCLASS);
-        }
-        function FillCreatureDisplay(creature) {
-            document.getElementById("creatureDisplayName").innerHTML = creature.GetName();
-            document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
-            document.getElementById("creatureDisplayAC").innerHTML = creature.AC.toString();
-            $("#creatureDisplayNotes").val(creature.Notes);
-            document.getElementById("creatureDisplayId").innerHTML = creature.Id.toString();
-            if (dmb.premiumEncounter.IsPremium) {
-                dmb.premiumEncounter.SetPictureData(creature.PictureData);
-            }
-            SelectRow(creature.Id);
         }
         function SelectRow(creatureid) {
             $("#" + creatureid + "_delete").prop("disabled", true);
