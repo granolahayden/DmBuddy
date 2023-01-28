@@ -27,9 +27,13 @@ else
 
 <br/>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCreatureModal">
-    Add Creatures
+    <i class="bi bi-plus-lg pe-2"></i>Add Creatures
+</button>
+<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#creatureLibraryModal">
+    <i class="bi bi-journal-richtext pe-2"></i>Creature Library
 </button>
 <partial name="_AddCreatureModal" />
+<partial name="_CreatureLibraryModal" />
 
 <partial name="_CreatureTable" />
 <partial name="_CreatureNotesModal" />
@@ -38,6 +42,7 @@ else
 @section scripts{
     <script src="~/js/encounter.js"></script>
     <script src="~/js/premiumEncounter.js"></script>
+    <script src="~/js/library.js"></script>
 
     @if(User.IsAtLeastPremium()){    
         <script src="~/js/jquery.paste_image_reader.js"></script>
