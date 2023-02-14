@@ -282,6 +282,11 @@ var dmb;
             creature.Notes = modalNotes;
         }
         encounter.SaveCreatureNotesModal = SaveCreatureNotesModal;
+        function AddTemplateToLibraryAndResetForm() {
+            CreateTemplateFromInput();
+            ClearCreatureForm();
+        }
+        encounter.AddTemplateToLibraryAndResetForm = AddTemplateToLibraryAndResetForm;
     })(encounter = dmb.encounter || (dmb.encounter = {}));
 })(dmb || (dmb = {}));
 $(document).ready(function () {

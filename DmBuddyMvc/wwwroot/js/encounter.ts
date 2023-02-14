@@ -351,6 +351,11 @@
 
         creature.Notes = modalNotes;
     }
+
+    export function AddTemplateToLibraryAndResetForm(): void {
+        CreateTemplateFromInput();
+        ClearCreatureForm();
+    }
 }
 
 $(document).ready(function (): void {
