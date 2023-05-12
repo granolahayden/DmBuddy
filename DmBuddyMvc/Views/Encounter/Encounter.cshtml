@@ -7,21 +7,21 @@
 @if(User.IsAtLeastPremium())
 {
     <div class="container text-center">
-        <partial name="_CreatureNameBar" />
+        <partial name="@(DirectoryConsts.CreaturePartials)/_CreatureNameBar.cshtml" />
         <hr/>
         <div class="row row-cols-2">
             <div class="row me-2">
                     <img id="creaturePictureDisplay" style="width:100%; height:100%; background-color:dimgray" />
             </div>
             <div class="row border-start">
-                <partial name="_Creature">
+                <partial name="@(DirectoryConsts.CreaturePartials)/_Creature.cshtml">
             </div>
         </div>
     </div>
 }
 else
 {
-    <partial name="_CreatureDisplay" />
+    <partial name="@(DirectoryConsts.CreaturePartials)/_CreatureDisplay.cshtml" />
 }
 
 <hr/>
@@ -32,11 +32,11 @@ else
 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#creatureLibraryModal">
     <i class="bi bi-journal-richtext pe-2"></i>Creature Library
 </button>
-<partial name="_AddCreatureModal" />
-<partial name="_CreatureLibraryModal" />
+<partial name="@(DirectoryConsts.CreaturePartials)/_AddCreatureModal.cshtml" />
+<partial name="@(DirectoryConsts.CreaturePartials)/_CreatureLibraryModal.cshtml" />
 
-<partial name="_CreatureTable" />
-<partial name="_CreatureNotesModal" />
+<partial name="@(DirectoryConsts.CreaturePartials)/_CreatureTable.cshtml" />
+<partial name="@(DirectoryConsts.CreaturePartials)/_CreatureNotesModal.cshtml" />
 
 
 @section scripts{
