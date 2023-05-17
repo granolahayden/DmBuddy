@@ -15,20 +15,15 @@ namespace DmBuddyMvc.Controllers
             return View();
         }
 
-
-        public IActionResult CreateEncounter()
+        [HttpPost]
+        public IResult CreateEncounter(string encountername)
         {
             if (!User.IsAtLeastBasic())
             {
-                return Redirect("/Identity/Account/Login");
+                return Results.BadRequest();
             }
-            else return View();
-        }
 
-        [HttpPost]
-        public IActionResult GetCreatureAsync()
-        {
-            return Json("");
+            return Results.Content("");
         }
     }
 }
