@@ -37,6 +37,4 @@
         $("#" + index + "_InitiativeInput").val('');
     }
 }
-$(document).ready(function (): void {
-    dmb.library.init();
-});
+$(dmb.library.init);

@@ -1,4 +1,5 @@
-﻿using DmBuddyMvc.Helpers;
+﻿using DmBuddyMvc.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DmBuddyMvc.Controllers
@@ -15,15 +16,17 @@ namespace DmBuddyMvc.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IResult CreateEncounter(string encountername)
+        [Authorize]
+        public IActionResult NewEncounter(string encountername)
         {
-            if (!User.IsAtLeastBasic())
-            {
-                return Results.BadRequest();
-            }
+            return View("Encounter", encountername);
+        }
 
-            return Results.Content("");
+        [Authorize]
+        [HttpPost]
+        public IResult SaveEncounter(Encounter encounter)
+        {
+            return Results.Ok();
         }
     }
 }

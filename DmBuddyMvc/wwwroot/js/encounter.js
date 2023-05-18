@@ -54,23 +54,23 @@ var dmb;
             hpInput = $("#creatureHPInput");
             initiativeInput = $("#creatureInitiativeInput");
             notesInput = $("#creatureNotesInput");
-            $("#addCreatureModal").on('show.bs.modal', function (event) {
+            $("#addCreatureModal").on('show.bs.modal', function () {
                 setTimeout(function () {
-                    nameInput.focus();
+                    nameInput.trigger("focus");
                 }, 500);
             });
-            $("#creatureInitiativeInput").keyup(function (e) {
-                if (e.keyCode === 13) {
+            $("#creatureInitiativeInput").on("keyup", function (e) {
+                if (e.key === "Enter") {
                     AddCreaturesAndResetForm();
                 }
             });
-            $("#creatureHPInput").keyup(function (e) {
-                if (e.keyCode === 13) {
+            $("#creatureHPInput").on("keyup", function (e) {
+                if (e.key === "Enter") {
                     AddCreaturesAndResetForm();
                 }
             });
-            $("#creatureACInput").keyup(function (e) {
-                if (e.keyCode === 13) {
+            $("#creatureACInput").on("keyup", function (e) {
+                if (e.key === "Enter") {
                     AddCreaturesAndResetForm();
                 }
             });
@@ -287,9 +287,14 @@ var dmb;
             ClearCreatureForm();
         }
         encounter.AddTemplateToLibraryAndResetForm = AddTemplateToLibraryAndResetForm;
+        function GetCurrentCreature() {
+            const currentid = GetCurrentCreatureId();
+            if (currentid == null)
+                return null;
+            return creatures.find(c => c.Id == currentid);
+        }
+        encounter.GetCurrentCreature = GetCurrentCreature;
     })(encounter = dmb.encounter || (dmb.encounter = {}));
 })(dmb || (dmb = {}));
-$(document).ready(function () {
-    dmb.encounter.Init();
-});
+$(dmb.encounter.Init);
 //# sourceMappingURL=encounter.js.map

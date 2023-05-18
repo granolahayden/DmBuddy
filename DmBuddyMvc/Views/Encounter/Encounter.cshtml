@@ -1,7 +1,15 @@
 ﻿@using DmBuddyMvc.Helpers;
+@model string
 @{
     ViewData["Title"] = "Encounter";
 }
+@if(Model is not null)
+{
+    <h1 id="encounterName">@Model</h1>
+}
+
+<button onclick="dmb.save.SaveEncounter()">Save</button>
+
 <partial name="_AdSense" />
 
 @if(User.IsAtLeastPremium())
@@ -43,6 +51,7 @@ else
     <script src="~/js/encounter.js"></script>
     <script src="~/js/premiumEncounter.js"></script>
     <script src="~/js/library.js"></script>
+    <script src="~/js/save.js"></script>
 
     @if(User.IsAtLeastPremium()){    
         <script src="~/js/jquery.paste_image_reader.js"></script>

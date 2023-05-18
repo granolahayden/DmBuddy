@@ -86,26 +86,26 @@
         initiativeInput = $("#creatureInitiativeInput");
         notesInput = $("#creatureNotesInput");
 
-        $("#addCreatureModal").on('show.bs.modal', function (event: JQueryEventObject) {
+        $("#addCreatureModal").on('show.bs.modal', function () {
             setTimeout(function () {
-                nameInput.focus();
+                nameInput.trigger("focus");
             }, 500);
         });
 
-        $("#creatureInitiativeInput").keyup(function (e) {
-            if (e.keyCode === 13) {
+        $("#creatureInitiativeInput").on("keyup", function (e) {
+            if (e.key === "Enter") {
                 AddCreaturesAndResetForm();
             }
         });
 
-        $("#creatureHPInput").keyup(function (e) {
-            if (e.keyCode === 13) {
+        $("#creatureHPInput").on("keyup", function (e) {
+            if (e.key === "Enter") {
                 AddCreaturesAndResetForm();
             }
         });
 
-        $("#creatureACInput").keyup(function (e) {
-            if (e.keyCode === 13) {
+        $("#creatureACInput").on("keyup", function (e) {
+            if (e.key === "Enter") {
                 AddCreaturesAndResetForm();
             }
         });
@@ -356,8 +356,13 @@
         CreateTemplateFromInput();
         ClearCreatureForm();
     }
-}
 
-$(document).ready(function (): void {
-    dmb.encounter.Init();
-});
+    export function GetCurrentCreature(): Creature {
+        const currentid = GetCurrentCreatureId();
+        if (currentid == null)
+            return null;
+
+        return creatures.find(c => c.Id == currentid);
+    }
+}
+$(dmb.encounter.Init);

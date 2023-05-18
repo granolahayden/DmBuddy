@@ -36,7 +36,5 @@ var dmb;
         }
     })(library = dmb.library || (dmb.library = {}));
 })(dmb || (dmb = {}));
-$(document).ready(function () {
-    dmb.library.init();
-});
+$(dmb.library.init);
 //# sourceMappingURL=library.js.map
