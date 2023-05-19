@@ -249,7 +249,7 @@
         if (dmb.premiumEncounter.IsPremium)
             dmb.premiumEncounter.ClearPictureInput();
 
-        nameInput.focus();
+        nameInput.trigger("focus");
     }
 
     export function ShowNextCreature(): void {
@@ -363,6 +363,20 @@
             return null;
 
         return creatures.find(c => c.Id == currentid);
+    }
+
+    export function GetCreatureTemplate(index: number) {
+        if (index >= creatureTemplates.length)
+            return null;
+
+        return creatureTemplates[index];
+    }
+
+    export function GetCreature(index: number) {
+        if (index >= creatures.length)
+            return null;
+
+        return creatures[index];
     }
 }
 $(dmb.encounter.Init);

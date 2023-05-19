@@ -198,7 +198,7 @@ var dmb;
             notesInput.val("");
             if (dmb.premiumEncounter.IsPremium)
                 dmb.premiumEncounter.ClearPictureInput();
-            nameInput.focus();
+            nameInput.trigger("focus");
         }
         encounter.ClearCreatureForm = ClearCreatureForm;
         function ShowNextCreature() {
@@ -294,6 +294,18 @@ var dmb;
             return creatures.find(c => c.Id == currentid);
         }
         encounter.GetCurrentCreature = GetCurrentCreature;
+        function GetCreatureTemplate(index) {
+            if (index >= creatureTemplates.length)
+                return null;
+            return creatureTemplates[index];
+        }
+        encounter.GetCreatureTemplate = GetCreatureTemplate;
+        function GetCreature(index) {
+            if (index >= creatures.length)
+                return null;
+            return creatures[index];
+        }
+        encounter.GetCreature = GetCreature;
     })(encounter = dmb.encounter || (dmb.encounter = {}));
 })(dmb || (dmb = {}));
 $(dmb.encounter.Init);

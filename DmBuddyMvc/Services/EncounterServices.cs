@@ -1,18 +1,17 @@
-﻿using DmBuddyMvc.Models;
-
-namespace DmBuddyMvc.Services
+﻿namespace DmBuddyMvc.Services
 {
     public class EncounterServices
     {
-        private IEnumerable<Creature> currentEncounter;
-        public EncounterServices() 
+        private readonly IBlobServices _blobservices;
+        private const string ENCOUNTERCONTAINER = "encounter";
+        public EncounterServices(IBlobServices blobservices)
         {
-            currentEncounter = new List<Creature>();
+            _blobservices = blobservices;
         }
 
-        public void AddCreature(Creature creature)
+        public async Task<string> LoadEncounterAsync(string username, string encountername)
         {
-            currentEncounter.Append(creature);
+            return await _blobservices.GetBlobAsJsonAsync(ENCOUNTERCONTAINER, username, $"{encountername}.json");
         }
     }
 }
