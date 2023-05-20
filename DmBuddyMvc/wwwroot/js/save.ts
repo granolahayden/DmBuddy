@@ -1,5 +1,9 @@
 namespace dmb.save {
     export function SaveEncounter() {
+        let currentcreature = dmb.encounter.GetCurrentCreature();
+        if (currentcreature != null)
+            dmb.encounter.SaveCreatureNotes(currentcreature);
+
         const encounterName = document.getElementById("encounterName")?.innerHTML != undefined ? document.getElementById("encounterName")?.innerHTML : null;
 
         let creatureTemplates = [];
@@ -11,7 +15,7 @@ namespace dmb.save {
                 MaxHP: currentCreatureTemplate.MaxHP,
                 AC: currentCreatureTemplate.AC,
                 DefaultNotes: currentCreatureTemplate.DefaultNotes,
-                ImageData: currentCreatureTemplate.PictureData
+                PictureData: currentCreatureTemplate.PictureData
             });
             currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(i);
         }
@@ -30,13 +34,6 @@ namespace dmb.save {
             currentCreature = dmb.encounter.GetCreature(i);
         }
 
-        let encounter = {
-            Name: encounterName,
-            CurrentId: GetCurrentId(),
-            CreatureTemplates: creatureTemplates,
-            Creatures: creatures
-        };
-
         $.post("/Encounter/SaveEncounter", {
             encounter: {
                 Name: encounterName,
@@ -44,20 +41,53 @@ namespace dmb.save {
                 CreatureTemplates: creatureTemplates,
                 Creatures: creatures
             }
-        }).then(function (data) { console.log(data); });
+        });
     }
 
     function GetCurrentId(): number {
         const currentcreature = dmb.encounter.GetCurrentCreature();
-        return currentcreature?.Id ?? 0;
+        return currentcreature?.Id;
     }
 
 
     export async function LoadEncounter(encounterName: string) {
-        var encounterResponse = await fetch("/Encounter/LoadEncounter/" + encounterName);
-        var encounterJson = await encounterResponse.json();
+        await fetch("/Encounter/LoadEncounter/" + encounterName, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: 'get'
+        })
+        .then(response => response.json())
+            .then(response => {
+                PopulateEncounterFromJson(JSON.parse(response.value));
+        })
+        .catch();
+    }
 
-        console.log(encounterJson);
+    function PopulateEncounterFromJson(encounterJson) {
+        let creatureTemplates = encounterJson.CreatureTemplates;
+        for (let i = 0; i < creatureTemplates.length; i++) {
+            dmb.encounter.CreateTemplate(creatureTemplates[i].Name, creatureTemplates[i].AC, creatureTemplates[i].MaxHP, creatureTemplates[i].DefaultNotes, creatureTemplates[i].NameCount, creatureTemplates[i].PictureData);
+        }
+
+        let creatures = encounterJson.Creatures;
+        for (let i = 0; i < creatures.length; i++) {
+            let templateindex = Number(creatures[i].CreatureIndex);
+            let creature = new dmb.encounter.Creature(dmb.encounter.GetCreatureTemplate(templateindex), templateindex);
+            creature.NameCount = creatures[i].NameCount;
+            creature.Initiative = creatures[i].Initiative;
+            creature.Notes = creatures[i].Notes;
+            creature.CurrentHP = creatures[i].CurrentHP;
+            creature.Id = creatures[i].Id;
+            dmb.encounter.AddCreature(creature);
+        }
+
+        if (encounterJson.CurrentId != null) {
+            document.getElementById("creatureDisplayId").innerHTML = encounterJson.CurrentId;
+            dmb.encounter.FillCreatureDisplayFromCreature(dmb.encounter.GetCurrentCreature());
+        }
+        
     }
 
 }

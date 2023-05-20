@@ -1,12 +1,13 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using DmBuddyMvc.Models;
 
 namespace DmBuddyMvc.Services
 {
     public interface IBlobServices
     {
         public Task<string> GetBlobAsJsonAsync(string container, string path, string filename);
-        public Task SaveBlobAsync(string container, string path, string filename);
+        public Task<IResultObject> SaveBlobAsync(string data, string container, string path, string filename);
     }
 
     public class BlobServices : IBlobServices
@@ -20,16 +21,29 @@ namespace DmBuddyMvc.Services
 
         public async Task<string> GetBlobAsJsonAsync(string container, string path, string filename)
         {
-            var encounterfile = _blobServiceClient.GetBlobContainerClient(container).GetBlobClient($"{path}/{filename}");
+            var blob = _blobServiceClient.GetBlobContainerClient(container).GetBlobClient($"{path}/{filename}");
 
-            if (encounterfile is null)
+            if (blob is null)
                 return "";
 
-            BlobDownloadResult downloadresult = await encounterfile.DownloadContentAsync();
+            BlobDownloadResult downloadresult = await blob.DownloadContentAsync();
             return downloadresult.Content.ToString();
         }
 
-        public async Task SaveBlobAsync(string container, string path, string filename) => throw new NotImplementedException();
+        public async Task<IResultObject> SaveBlobAsync(string data, string container, string path, string filename)
+        {
+            try
+            {
+                var blobcontainer = _blobServiceClient.GetBlobContainerClient(container);
+                var blob = blobcontainer.GetBlobClient($"{path}/{filename}");
+                await blob.UploadAsync(BinaryData.FromString(data), overwrite: true);
+                return ResultObjects.GoodResult();
+            }
+            catch
+            {
+                return ResultObjects.BadResult();
+            }
+        }
 
     }
 }

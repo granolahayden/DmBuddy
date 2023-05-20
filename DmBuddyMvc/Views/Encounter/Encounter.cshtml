@@ -15,8 +15,9 @@ else if(User.IsAtLeastBasic())
     <partial name="_NewEncounterModal"/>
 }
 
-<button class="btn btn-primary" onclick="dmb.save.LoadEncounter('testencounter')">Load</button>
+<button class="btn btn-primary" onclick="dmb.save.LoadEncounter('@Model')">Load</button>
 <button class="btn btn-primary" onclick="dmb.save.SaveEncounter()">Save</button>
+<button class="btn btn-primary" onclick="dmb.encounter.ClearPage()">Clear</button>
 
 <partial name="_AdSense" />
 

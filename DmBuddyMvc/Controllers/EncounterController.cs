@@ -12,9 +12,9 @@ namespace DmBuddyMvc.Controllers
         {
             _encounterservices = encounterservices;
         }
-        public IActionResult Index(Guid? id)
+        public IActionResult Index(string encountername)
         {
-            return View("Encounter");
+            return View("Encounter", encountername);
         }
 
         public IActionResult SavedEncounters()
@@ -24,25 +24,30 @@ namespace DmBuddyMvc.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult NewEncounter(string encountername)
+        public async Task<IActionResult> NewEncounter(string encountername)
         {
-            //create a blank .json in their file
-            //redirect to Encounter/?encountername=...
-            //load from there like that
-            return View("Encounter", encountername);
+            var username = User?.Identity?.Name;
+            if (username is null)
+                return BadRequest();
+
+            var result = await _encounterservices.CreateEncounterAsync(username, encountername);
+            if (!result.IsSuccess)
+                return BadRequest();
+
+            return Redirect($"/Encounter?encountername={encountername}");
         }
+
 
         [Authorize]
         [HttpPost]
         public async Task<IResult> SaveEncounter(EncounterDTO encounter)
         {
             var username = User?.Identity?.Name;
-            if (username is null)
+            if (username is null || string.IsNullOrWhiteSpace(encounter.Name))
                 return Results.BadRequest();
 
-            //var encounterjson = await _blobservice.GetBlobAsJsonAsync(username, "testencounter");
-            var encounterjson = await _encounterservices.LoadEncounterAsync(username, "testencounter");
-            return Results.Ok(encounterjson);
+            var result = await _encounterservices.SaveEncounterAsync(encounter, username, encounter.Name);
+            return Results.Ok();
         }
 
         [Authorize]
@@ -56,7 +61,7 @@ namespace DmBuddyMvc.Controllers
 
             //var encounterjson = await _blobservice.GetBlobAsJsonAsync(username, "testencounter");
             var encounterjson = await _encounterservices.LoadEncounterAsync(username, encountername);
-            return Results.Ok(encounterjson);
+            return Results.Ok(Json(encounterjson));
         }
     }
 }
