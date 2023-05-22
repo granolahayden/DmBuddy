@@ -7,13 +7,6 @@
 {
     <h1 id="encounterName">@Model</h1>
 }
-else if(User.IsAtLeastBasic())
-{
-    <div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEncounterModal">Save</button>
-    </div>
-    <partial name="_NewEncounterModal"/>
-}
 <partial name="_AdSense" />
 
 @if(User.IsAtLeastPremium())
