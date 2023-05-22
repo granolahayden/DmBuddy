@@ -15,7 +15,7 @@ namespace DmBuddyMvc.Controllers
         }
         public IActionResult Index(string encountername)
         {
-            if (User.IsAtLeastBasic())
+            if (User.IsAtLeastBasic() && !string.IsNullOrEmpty(encountername))
                 return View("Encounter", encountername);
             else
                 return View("Encounter");
