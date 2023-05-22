@@ -258,6 +258,7 @@
         let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
         table.deleteRow(deleteIndex);
         creatures.splice(deleteIndex, 1);
+        dmb.save.SaveEncounter();
     }
 
     export function ClearCreatureForm(): void {

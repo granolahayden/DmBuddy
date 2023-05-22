@@ -206,6 +206,7 @@ var dmb;
             let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
             table.deleteRow(deleteIndex);
             creatures.splice(deleteIndex, 1);
+            dmb.save.SaveEncounter();
         }
         encounter.RemoveFromInitiative = RemoveFromInitiative;
         function ClearCreatureForm() {
