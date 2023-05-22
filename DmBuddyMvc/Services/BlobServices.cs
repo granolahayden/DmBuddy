@@ -8,6 +8,8 @@ namespace DmBuddyMvc.Services
     {
         public Task<string> GetBlobAsJsonAsync(string container, string path, string filename);
         public Task<IResultObject> SaveBlobAsync(string data, string container, string path, string filename);
+        public Task<List<string>> GetListOfFilesAsync(string container, string path);
+        public Task<IResultObject> DeleteBlobAsync(string container, string path, string filename);
     }
 
     public class BlobServices : IBlobServices
@@ -45,5 +47,31 @@ namespace DmBuddyMvc.Services
             }
         }
 
+        public async Task<List<string>> GetListOfFilesAsync(string container, string path)
+        {
+            var blobcontainer = _blobServiceClient.GetBlobContainerClient(container);
+            var list = new List<string>();
+            await foreach(var blob in blobcontainer.GetBlobsAsync(prefix: path))
+            {
+                list.Add(blob.Name[(path.Length+1)..]);
+            }
+
+            return list;
+        }
+
+        public async Task<IResultObject> DeleteBlobAsync(string container, string path, string filename)
+        {
+            try
+            {
+                var blobcontainer = _blobServiceClient.GetBlobContainerClient(container);
+                var blob = blobcontainer.GetBlobClient($"{path}/{filename}");
+                await blob.DeleteIfExistsAsync();
+                return ResultObjects.GoodResult();
+            }
+            catch
+            {
+                return ResultObjects.BadResult();
+            }
+        }
     }
 }

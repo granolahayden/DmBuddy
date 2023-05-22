@@ -1,4 +1,5 @@
-﻿using DmBuddyMvc.Models;
+﻿using DmBuddyMvc.Helpers;
+using DmBuddyMvc.Models;
 using DmBuddyMvc.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,40 +15,63 @@ namespace DmBuddyMvc.Controllers
         }
         public IActionResult Index(string encountername)
         {
-            return View("Encounter", encountername);
+            if (User.IsAtLeastBasic())
+                return View("Encounter", encountername);
+            else
+                return View("Encounter");
         }
 
-        public IActionResult SavedEncounters()
+        public async Task<IActionResult> SavedEncounters()
         {
-            return View();
+            List<string> savedencounters = new();
+            if (User.IsAtLeastPremium())
+                savedencounters = await _encounterservices.GetEncounterListAsync(User.LoginId());
+
+            return View(savedencounters);
         }
 
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> NewEncounter(string encountername)
         {
-            var username = User?.Identity?.Name;
-            if (username is null)
-                return BadRequest();
+            if (string.IsNullOrWhiteSpace(encountername))
+                return RedirectToActionWithError("SavedEncounters", "Name cannot be blank.");
 
-            var result = await _encounterservices.CreateEncounterAsync(username, encountername);
-            if (!result.IsSuccess)
-                return BadRequest();
+            var encounters = await _encounterservices.GetEncounterListAsync(User.LoginId());
+            if (encounters.Count >= EncounterServices.MAXSAVES)
+                return RedirectToActionWithError("SavedEncounters", $"Cannot have more than {EncounterServices.MAXSAVES} encounters.");
+
+            if (!encounters.Contains(encountername))
+                await _encounterservices.CreateEncounterAsync(User.LoginId(), encountername);
 
             return Redirect($"/Encounter?encountername={encountername}");
         }
 
+        private IActionResult RedirectToActionWithError(string action, string error)
+        {
+            TempData["Error"] = error;
+            return RedirectToAction(action);
+        }
 
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IResult> DeleteEncounter(string encountername)
+        {
+            var result = await _encounterservices.DeleteEncounterAsync(User.LoginId(), encountername);
+            return result.IsSuccess ? Results.Ok() : Results.BadRequest();
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IResult> SaveEncounter(EncounterDTO encounter)
         {
-            var username = User?.Identity?.Name;
-            if (username is null || string.IsNullOrWhiteSpace(encounter.Name))
-                return Results.BadRequest();
+            var result = await _encounterservices.SaveEncounterAsync(encounter, User.LoginId(), encounter.Name);
 
-            var result = await _encounterservices.SaveEncounterAsync(encounter, username, encounter.Name);
-            return Results.Ok();
+            return result.IsSuccess ? Results.Ok() : Results.BadRequest();
         }
 
         [Authorize]
@@ -55,12 +79,7 @@ namespace DmBuddyMvc.Controllers
         [Route("[controller]/[action]/{encountername}")]
         public async Task<IResult> LoadEncounter(string encountername)
         {
-            var username = User?.Identity?.Name;
-            if (username is null)
-                return Results.BadRequest();
-
-            //var encounterjson = await _blobservice.GetBlobAsJsonAsync(username, "testencounter");
-            var encounterjson = await _encounterservices.LoadEncounterAsync(username, encountername);
+            var encounterjson = await _encounterservices.LoadEncounterAsync(User.LoginId(), encountername);
             return Results.Ok(Json(encounterjson));
         }
     }

@@ -94,19 +94,19 @@
 
         $("#creatureInitiativeInput").on("keyup", function (e) {
             if (e.key === "Enter") {
-                AddCreaturesAndResetForm();
+                SmartAddFromForm();
             }
         });
 
         $("#creatureHPInput").on("keyup", function (e) {
             if (e.key === "Enter") {
-                AddCreaturesAndResetForm();
+                SmartAddFromForm();
             }
         });
 
         $("#creatureACInput").on("keyup", function (e) {
             if (e.key === "Enter") {
-                AddCreaturesAndResetForm();
+                SmartAddFromForm();
             }
         });
 
@@ -132,6 +132,13 @@
         });
     }
 
+    function SmartAddFromForm() {
+        if (initiativeInput.val().toString().trim() != "")
+            AddCreaturesAndResetForm();
+        else
+            AddTemplateToLibraryAndResetForm();
+    }
+
     export function AddCreaturesAndResetForm(): void {
         CreateTemplateFromInput();
 
@@ -141,6 +148,7 @@
 
         AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
         ClearCreatureForm();
+        dmb.save.SaveEncounter();
     }
 
     function CreateTemplateFromInput(): void {
@@ -383,6 +391,7 @@
     export function AddTemplateToLibraryAndResetForm(): void {
         CreateTemplateFromInput();
         ClearCreatureForm();
+        dmb.save.SaveEncounter();
     }
 
     export function GetCurrentCreature(): Creature {

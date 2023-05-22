@@ -10,7 +10,8 @@
                 <form id="newEncounterForm" method="POST" action="/Encounter/NewEncounter">
                     <div class="mb-3">
                         <label for="encounterNameInput" class="col-form-label">Encounter Name:</label>
-                        <input type="text" class="form-control" id="encounterNameInput" name="encountername">
+                        <input type="text" class="form-control" id="encounterNameInput" name="encountername" required>
+                        @Html.AntiForgeryToken()
                     </div>
                 </form>
             </div>

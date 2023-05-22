@@ -62,17 +62,17 @@ var dmb;
             });
             $("#creatureInitiativeInput").on("keyup", function (e) {
                 if (e.key === "Enter") {
-                    AddCreaturesAndResetForm();
+                    SmartAddFromForm();
                 }
             });
             $("#creatureHPInput").on("keyup", function (e) {
                 if (e.key === "Enter") {
-                    AddCreaturesAndResetForm();
+                    SmartAddFromForm();
                 }
             });
             $("#creatureACInput").on("keyup", function (e) {
                 if (e.key === "Enter") {
-                    AddCreaturesAndResetForm();
+                    SmartAddFromForm();
                 }
             });
             $("#creatureDisplayNotes").val("");
@@ -93,6 +93,12 @@ var dmb;
             });
         }
         encounter.Init = Init;
+        function SmartAddFromForm() {
+            if (initiativeInput.val().toString().trim() != "")
+                AddCreaturesAndResetForm();
+            else
+                AddTemplateToLibraryAndResetForm();
+        }
         function AddCreaturesAndResetForm() {
             CreateTemplateFromInput();
             let initiatives = initiativeInput.val().toString().match(encounter.INITIATIVEREGEX);
@@ -100,6 +106,7 @@ var dmb;
                 return;
             AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
             ClearCreatureForm();
+            dmb.save.SaveEncounter();
         }
         encounter.AddCreaturesAndResetForm = AddCreaturesAndResetForm;
         function CreateTemplateFromInput() {
@@ -310,6 +317,7 @@ var dmb;
         function AddTemplateToLibraryAndResetForm() {
             CreateTemplateFromInput();
             ClearCreatureForm();
+            dmb.save.SaveEncounter();
         }
         encounter.AddTemplateToLibraryAndResetForm = AddTemplateToLibraryAndResetForm;
         function GetCurrentCreature() {

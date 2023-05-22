@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using DmBuddyMvc.Helpers;
+<!DOCTYPE html>
 
 <link rel="icon" type="image/png" href="~/logo.png" />
 
@@ -26,12 +27,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Encounters</a>
-                            <ul class="dropdown-menu">
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Encounter" asp-action="Index">New Encounter</a></li>
-                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Encounter" asp-action="SavedEncounters">Saved Encounters</a></li>
-                            </ul>
+                        <li class="nav-item">
+                            @if(User.IsAtLeastBasic()){
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Encounter" asp-action="SavedEncounters">Encounters</a>
+                            }else{
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Encounter" asp-action="Index">Encounter</a>
+                            }
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Pricing" asp-action="Index">Pricing</a>

@@ -14,11 +14,6 @@ else if(User.IsAtLeastBasic())
     </div>
     <partial name="_NewEncounterModal"/>
 }
-
-<button class="btn btn-primary" onclick="dmb.save.LoadEncounter('@Model')">Load</button>
-<button class="btn btn-primary" onclick="dmb.save.SaveEncounter()">Save</button>
-<button class="btn btn-primary" onclick="dmb.encounter.ClearPage()">Clear</button>
-
 <partial name="_AdSense" />
 
 @if(User.IsAtLeastPremium())
@@ -55,6 +50,7 @@ else
 <partial name="@(DirectoryConsts.CreaturePartials)/_CreatureTable.cshtml" />
 <partial name="@(DirectoryConsts.CreaturePartials)/_CreatureNotesModal.cshtml" />
 
+@Html.AntiForgeryToken()
 
 @section scripts{
     <script src="~/js/encounter.js"></script>

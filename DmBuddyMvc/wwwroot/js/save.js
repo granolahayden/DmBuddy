@@ -11,12 +11,23 @@ var dmb;
 (function (dmb) {
     var save;
     (function (save) {
+        function init() {
+            var _a;
+            if (((_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML) == undefined) {
+                return;
+            }
+            LoadEncounter();
+            setInterval(SaveEncounter, 30000);
+        }
+        save.init = init;
         function SaveEncounter() {
             var _a, _b;
+            const encounterName = ((_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML) != undefined ? (_b = document.getElementById("encounterName")) === null || _b === void 0 ? void 0 : _b.innerHTML : null;
+            if (encounterName == null)
+                return;
             let currentcreature = dmb.encounter.GetCurrentCreature();
             if (currentcreature != null)
                 dmb.encounter.SaveCreatureNotes(currentcreature);
-            const encounterName = ((_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML) != undefined ? (_b = document.getElementById("encounterName")) === null || _b === void 0 ? void 0 : _b.innerHTML : null;
             let creatureTemplates = [];
             let currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(0);
             for (let i = 1; currentCreatureTemplate != null; i++) {
@@ -44,6 +55,7 @@ var dmb;
                 currentCreature = dmb.encounter.GetCreature(i);
             }
             $.post("/Encounter/SaveEncounter", {
+                __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(),
                 encounter: {
                     Name: encounterName,
                     CurrentId: GetCurrentId(),
@@ -57,8 +69,12 @@ var dmb;
             const currentcreature = dmb.encounter.GetCurrentCreature();
             return currentcreature === null || currentcreature === void 0 ? void 0 : currentcreature.Id;
         }
-        function LoadEncounter(encounterName) {
+        function LoadEncounter() {
+            var _a;
             return __awaiter(this, void 0, void 0, function* () {
+                let encounterName = (_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML;
+                if (encounterName == undefined)
+                    return;
                 yield fetch("/Encounter/LoadEncounter/" + encounterName, {
                     headers: {
                         'Accept': 'application/json',
@@ -67,8 +83,10 @@ var dmb;
                     method: 'get'
                 })
                     .then(response => response.json())
+                    .then(response => response.value)
                     .then(response => {
-                    PopulateEncounterFromJson(JSON.parse(response.value));
+                    if (response != "")
+                        PopulateEncounterFromJson(JSON.parse(response));
                 })
                     .catch();
             });
@@ -97,4 +115,5 @@ var dmb;
         }
     })(save = dmb.save || (dmb.save = {}));
 })(dmb || (dmb = {}));
+$(dmb.save.init);
 //# sourceMappingURL=save.js.map

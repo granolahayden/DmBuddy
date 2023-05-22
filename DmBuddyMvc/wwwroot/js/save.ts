@@ -1,10 +1,20 @@
 namespace dmb.save {
+    export function init() {
+        if (document.getElementById("encounterName")?.innerHTML == undefined) {
+            return;
+        }
+        LoadEncounter();
+        setInterval(SaveEncounter, 30000);
+    }
+
     export function SaveEncounter() {
+        const encounterName = document.getElementById("encounterName")?.innerHTML != undefined ? document.getElementById("encounterName")?.innerHTML : null;
+        if (encounterName == null)
+            return;
+
         let currentcreature = dmb.encounter.GetCurrentCreature();
         if (currentcreature != null)
             dmb.encounter.SaveCreatureNotes(currentcreature);
-
-        const encounterName = document.getElementById("encounterName")?.innerHTML != undefined ? document.getElementById("encounterName")?.innerHTML : null;
 
         let creatureTemplates = [];
         let currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(0);
@@ -35,6 +45,7 @@ namespace dmb.save {
         }
 
         $.post("/Encounter/SaveEncounter", {
+            __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(),
             encounter: {
                 Name: encounterName,
                 CurrentId: GetCurrentId(),
@@ -50,7 +61,11 @@ namespace dmb.save {
     }
 
 
-    export async function LoadEncounter(encounterName: string) {
+    export async function LoadEncounter() {
+        let encounterName = document.getElementById("encounterName")?.innerHTML;
+        if (encounterName == undefined)
+            return;
+
         await fetch("/Encounter/LoadEncounter/" + encounterName, {
             headers: {
                 'Accept': 'application/json',
@@ -59,8 +74,10 @@ namespace dmb.save {
             method: 'get'
         })
         .then(response => response.json())
-            .then(response => {
-                PopulateEncounterFromJson(JSON.parse(response.value));
+        .then(response => response.value)
+        .then(response => {
+            if (response != "")
+                PopulateEncounterFromJson(JSON.parse(response));
         })
         .catch();
     }
@@ -87,7 +104,6 @@ namespace dmb.save {
             document.getElementById("creatureDisplayId").innerHTML = encounterJson.CurrentId;
             dmb.encounter.FillCreatureDisplayFromCreature(dmb.encounter.GetCurrentCreature());
         }
-        
     }
-
 }
+$(dmb.save.init)
