@@ -1,0 +1,33 @@
+﻿@using DmBuddyMvc.Helpers;
+<div id="newEncounterModal" class="modal fade" tabindex="-1" aria-labelledby="newEncounterModallLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newEncounterModalLabel">New Encounter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newEncounterForm" method="POST" action="/Encounter/NewEncounter">
+                    <div class="mb-3">
+                        <label for="encounterNameInput" class="col-form-label">Encounter Name:</label>
+                        <input type="text" class="form-control" id="encounterNameInput" name="encountername" required>
+                        @Html.AntiForgeryToken()
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                @if (User.IsAtLeastBasic())
+                {
+                    <button type="submit" form="newEncounterForm" class="btn btn-primary">Create</button>
+                }
+                else
+                {
+                    <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="You must sign in first.">
+                        <button class="btn btn-primary" type="button" disabled>Create</button>
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+</div>

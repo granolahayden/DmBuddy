@@ -1,14 +1,16 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Azure.Storage;
+using DmBuddyDatabase;
 using DmBuddyMvc.Areas.Identity.Data;
 using DmBuddyMvc.Services;
-using DmBuddyDatabase;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DmBuddyConnectionString");
+var dbconnectionstring = builder.Configuration.GetConnectionString("DmBuddyConnectionString");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(dbconnectionstring));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
@@ -16,10 +18,16 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddSignInManager<DMBSignInManager>();
 
 // Add services to the container.
-builder.Services.AddDbContext<Database>(options => options.UseSqlServer(connectionString));
+builder.Services.AddAzureClients(x =>
+{
+    x.AddBlobServiceClient(new Uri("https://dmbuddystorage.blob.core.windows.net"), new StorageSharedKeyCredential("dmbuddystorage", "0UP0TPZR/GIb4UlIWv/+p+WlwWxCpyiou4ZotkwDG1jCnTtXtdSiFA79OMn9Nvf62d6AKAmdr51U+AStuYtcvg=="));
+   
+});
+builder.Services.AddDbContext<Database>(options => options.UseSqlServer(dbconnectionstring));
 builder.Services.AddScoped<EmailServices>();
 builder.Services.AddTransient<EncounterServices>();
 builder.Services.AddTransient<AccountServices>();
+builder.Services.AddTransient<IBlobServices, BlobServices>();
 
 builder.Services.AddControllersWithViews();
 
@@ -41,7 +49,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication(); ;
 
 app.UseAuthorization();
 
