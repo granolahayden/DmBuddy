@@ -20,7 +20,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 // Add services to the container.
 builder.Services.AddAzureClients(x =>
 {
-    x.AddBlobServiceClient(new Uri("https://dmbuddystorage.blob.core.windows.net"), new StorageSharedKeyCredential("dmbuddystorage", "0UP0TPZR/GIb4UlIWv/+p+WlwWxCpyiou4ZotkwDG1jCnTtXtdSiFA79OMn9Nvf62d6AKAmdr51U+AStuYtcvg=="));
+    x.AddBlobServiceClient(new Uri("https://dmbuddystorage.blob.core.windows.net"), new StorageSharedKeyCredential("dmbuddystorage", builder.Configuration.GetConnectionString("BlobStorageKey")));
    
 });
 builder.Services.AddDbContext<Database>(options => options.UseSqlServer(dbconnectionstring));
