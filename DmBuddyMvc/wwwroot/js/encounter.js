@@ -100,6 +100,8 @@ var dmb;
                 AddTemplateToLibraryAndResetForm();
         }
         function AddCreaturesAndResetForm() {
+            if (initiativeInput.val().toString().trim() == "")
+                return;
             CreateTemplateFromInput();
             let initiatives = initiativeInput.val().toString().match(encounter.INITIATIVEREGEX);
             if (initiatives.length < 1)

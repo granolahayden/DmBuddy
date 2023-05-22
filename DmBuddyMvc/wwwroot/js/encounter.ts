@@ -140,6 +140,9 @@
     }
 
     export function AddCreaturesAndResetForm(): void {
+        if (initiativeInput.val().toString().trim() == "")
+            return;
+
         CreateTemplateFromInput();
 
         let initiatives = initiativeInput.val().toString().match(INITIATIVEREGEX);
@@ -151,6 +154,8 @@
         dmb.save.SaveEncounter();
     }
 
+    
+
     function CreateTemplateFromInput(): void {
         let name = nameInput.val() as string;
         let ac = Number(acInput.val());
@@ -158,6 +163,8 @@
         let defaultnotes = notesInput.val() as string;
         let namecount = creatureTemplates.filter(ct => ct.Name == name).length + 1;
         let picturedata = dmb.premiumEncounter.IsPremium ? dmb.premiumEncounter.GetPictureValue() : "";
+
+        
 
         CreateTemplate(name, ac, maxhp, defaultnotes, namecount, picturedata);
     }
