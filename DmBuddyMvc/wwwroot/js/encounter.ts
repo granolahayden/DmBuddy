@@ -252,6 +252,8 @@
         if (Number(document.getElementById("creatureDisplayId").innerHTML) == id) {
             document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
         }
+
+        dmb.save.SaveCreatureData();
     }
 
     export function DamageCreatureFromId(id: number): void {

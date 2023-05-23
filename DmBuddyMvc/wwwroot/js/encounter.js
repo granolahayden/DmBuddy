@@ -198,6 +198,7 @@ var dmb;
             if (Number(document.getElementById("creatureDisplayId").innerHTML) == id) {
                 document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
             }
+            dmb.save.SaveCreatureData();
         }
         function DamageCreatureFromId(id) {
             let amount = Number($("#" + id + "_DamageOrHealAmountFromTable").val()) * -1;

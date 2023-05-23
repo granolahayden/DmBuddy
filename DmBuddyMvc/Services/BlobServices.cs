@@ -25,7 +25,7 @@ namespace DmBuddyMvc.Services
 		{
 			var blob = _blobServiceClient.GetBlobContainerClient(container).GetBlobClient($"{path}/{filename}");
 
-			if (blob is null)
+			if (!await blob.ExistsAsync())
 				return "";
 
 			BlobDownloadResult downloadresult = await blob.DownloadContentAsync();
@@ -51,9 +51,11 @@ namespace DmBuddyMvc.Services
 		{
 			var blobcontainer = _blobServiceClient.GetBlobContainerClient(container);
 			var list = new List<string>();
-			await foreach (var blob in blobcontainer.GetBlobsAsync(prefix: path))
+			var folders = blobcontainer.GetBlobsByHierarchyAsync(prefix: $"{path}/", delimiter: "/");
+			await foreach (var blob in folders)
 			{
-				list.Add(blob.Name[(path.Length + 1)..]);
+				if (blob.IsPrefix)
+					list.Add(blob.Prefix.AsSpan()[(path.Length + 1)..^1].ToString());
 			}
 
 			return list;

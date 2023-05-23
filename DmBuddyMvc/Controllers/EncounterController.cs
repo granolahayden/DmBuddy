@@ -3,6 +3,7 @@ using DmBuddyMvc.Models;
 using DmBuddyMvc.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace DmBuddyMvc.Controllers
 {
@@ -97,7 +98,7 @@ namespace DmBuddyMvc.Controllers
 		public async Task<IResult> LoadEncounter(string encountername)
 		{
 			var encounterjson = await _encounterservices.LoadEncounterAsync(User.LoginId(), encountername);
-			return Results.Ok(Json(encounterjson));
+			return Results.Ok(JsonSerializer.Serialize(encounterjson));
 		}
 	}
 }

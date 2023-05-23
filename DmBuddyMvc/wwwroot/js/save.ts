@@ -129,20 +129,29 @@ namespace dmb.save {
         if (encounterName == undefined)
             return;
 
-        await fetch("/Encounter/LoadEncounter/" + encounterName, {
+        var result = await fetch("/Encounter/LoadEncounter/" + encounterName, {
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Accept': 'application/json'
+                //'Content-Type': 'application/json'
             },
             method: 'get'
-        })
-        .then(response => response.json())
-        .then(response => response.value)
-        .then(response => {
-            if (response != "")
-                PopulateEncounterFromJson(JSON.parse(response));
-        })
-        .catch();
+        }).then(response => response.json())
+        //.then(response => {
+        //    if (response != "")
+        //        PopulateEncounterFromJson(JSON.parse(response));
+        ;
+            
+
+                   
+        //.then(response => response.value)
+        //.then(response => {
+        //    if (response != "")
+        //        PopulateEncounterFromJson(JSON.parse(response));
+        //})
+        //.catch();
+
+        if (result != "")
+            PopulateEncounterFromJson(JSON.parse(result));
     }
 
     function PopulateEncounterFromJson(encounterJson) {

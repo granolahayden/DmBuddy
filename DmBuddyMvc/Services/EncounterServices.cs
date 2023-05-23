@@ -8,6 +8,8 @@ namespace DmBuddyMvc.Services
 	{
 		private readonly IBlobServices _blobservices;
 		private const string ENCOUNTERCONTAINER = "encounter";
+		private const string CREATUREFILE = "creaturedata.json";
+		private const string TEMPLATEFILE = "creaturetemplatedata.json";
 		public static int MAXSAVES = 3;
 		public EncounterServices(IBlobServices blobservices)
 		{
@@ -16,9 +18,12 @@ namespace DmBuddyMvc.Services
 
 		public async Task<EncounterDTO> LoadEncounterAsync(Guid loginid, string encountername)
 		{
-			//return await _blobservices.GetBlobAsJsonAsync(ENCOUNTERCONTAINER, loginid.ToString(), encountername.Json());
-			var creaturedata = JsonSerializer.Deserialize<CreatureData>(await _blobservices.GetBlobAsJsonAsync(ENCOUNTERCONTAINER, $"{loginid}/{encountername}", "creaturedata.json"));
-			var creaturetemplatedata = JsonSerializer.Deserialize<CreatureTemplateData>(await _blobservices.GetBlobAsJsonAsync(ENCOUNTERCONTAINER, $"{loginid}/{encountername}", "creaturetemplatedata.json"));
+			var creaturedatastring = await _blobservices.GetBlobAsJsonAsync(ENCOUNTERCONTAINER, $"{loginid}/{encountername}", CREATUREFILE);
+			var creaturedata = string.IsNullOrEmpty(creaturedatastring) ? null : JsonSerializer.Deserialize<CreatureData>(creaturedatastring);
+
+			var creaturetemplatestring = await _blobservices.GetBlobAsJsonAsync(ENCOUNTERCONTAINER, $"{loginid}/{encountername}", TEMPLATEFILE);
+			var creaturetemplatedata = string.IsNullOrEmpty(creaturetemplatestring) ? null : JsonSerializer.Deserialize<CreatureTemplateData>(creaturetemplatestring);
+
 			var encounterdto = new EncounterDTO
 			{
 				Name = encountername,
@@ -32,7 +37,9 @@ namespace DmBuddyMvc.Services
 
 		public async Task<IResultObject> CreateEncounterAsync(Guid loginid, string encountername)
 		{
-			return await _blobservices.SaveBlobAsync("", ENCOUNTERCONTAINER, loginid.ToString(), encountername.Json());
+			var creaturedataresult = await _blobservices.SaveBlobAsync("", ENCOUNTERCONTAINER, $"{loginid}/{encountername}", CREATUREFILE);
+			var templatedataresult = await _blobservices.SaveBlobAsync("", ENCOUNTERCONTAINER, $"{loginid}/{encountername}", TEMPLATEFILE);
+			return creaturedataresult.IsSuccess && templatedataresult.IsSuccess ? ResultObjects.GoodResult() : ResultObjects.BadResult();
 		}
 
 		public async Task<IResultObject> SaveEncounterAsync(Guid loginid, EncounterDTO encounter)
@@ -44,24 +51,26 @@ namespace DmBuddyMvc.Services
 		public async Task<IResultObject> SaveCreatureDataAsync(Guid loginid, string encountername, CreatureData creaturedata)
 		{
 			string creaturejson = JsonSerializer.Serialize(creaturedata);
-			return await _blobservices.SaveBlobAsync(creaturejson, ENCOUNTERCONTAINER, $"{loginid}/{encountername}", "creaturedata.json");
+			return await _blobservices.SaveBlobAsync(creaturejson, ENCOUNTERCONTAINER, $"{loginid}/{encountername}", CREATUREFILE);
 		}
 
 		public async Task<IResultObject> SaveCreatureTemplateDataAsync(Guid loginid, string encountername, CreatureTemplateData templatedata)
 		{
 			string creaturejson = JsonSerializer.Serialize(templatedata);
-			return await _blobservices.SaveBlobAsync(creaturejson, ENCOUNTERCONTAINER, $"{loginid}/{encountername}", "creaturetemplatedata.json");
+			return await _blobservices.SaveBlobAsync(creaturejson, ENCOUNTERCONTAINER, $"{loginid}/{encountername}", TEMPLATEFILE);
 		}
 
 		public async Task<List<string>> GetEncounterListAsync(Guid loginid)
 		{
 			var encounters = await _blobservices.GetListOfFilesAsync(ENCOUNTERCONTAINER, loginid.ToString());
-			return encounters.Select(e => e[..^5]).ToList();
+			return encounters;
 		}
 
 		public async Task<IResultObject> DeleteEncounterAsync(Guid loginid, string encountername)
 		{
-			return await _blobservices.DeleteBlobAsync(ENCOUNTERCONTAINER, loginid.ToString(), encountername.Json());
+			var creatureresult = await _blobservices.DeleteBlobAsync(ENCOUNTERCONTAINER, $"{loginid}/{encountername}", CREATUREFILE);
+			var templateresult = await _blobservices.DeleteBlobAsync(ENCOUNTERCONTAINER, $"{loginid}/{encountername}", TEMPLATEFILE);
+			return creatureresult.IsSuccess && templateresult.IsSuccess ? ResultObjects.GoodResult() : ResultObjects.BadResult();
 		}
 	}
 }

@@ -133,20 +133,21 @@ var dmb;
                 let encounterName = (_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML;
                 if (encounterName == undefined)
                     return;
-                yield fetch("/Encounter/LoadEncounter/" + encounterName, {
+                var result = yield fetch("/Encounter/LoadEncounter/" + encounterName, {
                     headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Accept': 'application/json'
+                        //'Content-Type': 'application/json'
                     },
                     method: 'get'
-                })
-                    .then(response => response.json())
-                    .then(response => response.value)
-                    .then(response => {
-                    if (response != "")
-                        PopulateEncounterFromJson(JSON.parse(response));
-                })
-                    .catch();
+                }).then(response => response.json());
+                //.then(response => response.value)
+                //.then(response => {
+                //    if (response != "")
+                //        PopulateEncounterFromJson(JSON.parse(response));
+                //})
+                //.catch();
+                if (result != "")
+                    PopulateEncounterFromJson(JSON.parse(result));
             });
         }
         save.LoadEncounter = LoadEncounter;
