@@ -29,6 +29,7 @@ var dmb;
                 return;
             dmb.encounter.AddCreaturesFromTemplateIndex(index, initiativesarray);
             ClearInitiativeInput(index);
+            dmb.save.SaveCreatureData();
         }
         library.AddCreatureFromLibrary = AddCreatureFromLibrary;
         function ClearInitiativeInput(index) {

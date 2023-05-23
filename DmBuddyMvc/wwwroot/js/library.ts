@@ -31,6 +31,7 @@
 
         dmb.encounter.AddCreaturesFromTemplateIndex(index, initiativesarray);
         ClearInitiativeInput(index);
+        dmb.save.SaveCreatureData();
     }
 
     function ClearInitiativeInput(index: number): void {    

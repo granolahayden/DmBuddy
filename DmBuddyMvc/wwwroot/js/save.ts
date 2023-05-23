@@ -4,7 +4,7 @@ namespace dmb.save {
             return;
         }
         LoadEncounter();
-        setInterval(SaveEncounter, 30000);
+        //setInterval(SaveEncounter, 30000);
     }
 
     export function SaveEncounter() {
@@ -54,6 +54,67 @@ namespace dmb.save {
         $.post("/Encounter/SaveEncounter", {
             __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(),
             encounter: encounterjson
+        });
+    }
+
+    export function SaveCreatureData(): void{
+        const encounterName = document.getElementById("encounterName")?.innerHTML != undefined ? document.getElementById("encounterName")?.innerHTML : null;
+        if (encounterName == null)
+            return;
+
+        let creatures = [];
+        let currentCreature = dmb.encounter.GetCreature(0);
+        for (let i = 1; currentCreature != null; i++) {
+            creatures.push({
+                Id: currentCreature.Id,
+                NameCount: currentCreature.NameCount,
+                CreatureIndex: currentCreature.CreatureIndex,
+                Initiative: currentCreature.Initiative,
+                CurrentHP: currentCreature.CurrentHP,
+                Notes: currentCreature.Notes
+            });
+            currentCreature = dmb.encounter.GetCreature(i);
+        }
+
+        let creaturesjson = {
+            CurrentId: GetCurrentId(),
+            Creatures: creatures
+        }
+
+        $.post("/Encounter/SaveCreatureData", {
+            __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(),
+            encountername: encounterName,
+            creaturedata: creaturesjson
+        });
+    }
+
+    export function SaveCreatureTemplateData(): void {
+        const encounterName = document.getElementById("encounterName")?.innerHTML != undefined ? document.getElementById("encounterName")?.innerHTML : null;
+        if (encounterName == null)
+            return;
+
+        let creatureTemplates = [];
+        let currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(0);
+        for (let i = 1; currentCreatureTemplate != null; i++) {
+            creatureTemplates.push({
+                Name: currentCreatureTemplate.Name,
+                NameCount: currentCreatureTemplate.NameCount,
+                MaxHP: currentCreatureTemplate.MaxHP,
+                AC: currentCreatureTemplate.AC,
+                DefaultNotes: currentCreatureTemplate.DefaultNotes,
+                PictureData: currentCreatureTemplate.PictureData
+            });
+            currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(i);
+        }
+
+        let templatesjson = {
+            CreatureTemplates: creatureTemplates
+        }
+
+        $.post("/Encounter/SaveCreatureTemplateData", {
+            __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(),
+            encountername: encounterName,
+            creaturetemplatedata: templatesjson
         });
     }
 

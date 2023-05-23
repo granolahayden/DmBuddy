@@ -151,7 +151,7 @@
 
         AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
         ClearCreatureForm();
-        dmb.save.SaveEncounter();
+        dmb.save.SaveCreatureData();
     }
 
     
@@ -164,9 +164,8 @@
         let namecount = creatureTemplates.filter(ct => ct.Name == name).length + 1;
         let picturedata = dmb.premiumEncounter.IsPremium ? dmb.premiumEncounter.GetPictureValue() : "";
 
-        
-
         CreateTemplate(name, ac, maxhp, defaultnotes, namecount, picturedata);
+        dmb.save.SaveCreatureTemplateData();
     }
 
     export function CreateTemplate(name: string, ac: number, maxhp: number, defaultnotes: string, namecount: number, picturedata: string): void {
@@ -265,7 +264,7 @@
         let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
         table.deleteRow(deleteIndex);
         creatures.splice(deleteIndex, 1);
-        dmb.save.SaveEncounter();
+        dmb.save.SaveCreatureData();
     }
 
     export function ClearCreatureForm(): void {
@@ -325,10 +324,12 @@
         DeselectRow(currentcreature.Id);
         SaveCreatureNotes(currentcreature);
         FillCreatureDisplayFromCreature(nextcreature);
+        dmb.save.SaveCreatureData();
     }
 
     export function SaveCreatureNotes(creature: Creature) {
         creature.Notes = $("#creatureDisplayNotes").val() as string;
+        dmb.save.SaveCreatureData();
     }
 
     function DeselectRow(creatureid: number): void {
@@ -399,7 +400,7 @@
     export function AddTemplateToLibraryAndResetForm(): void {
         CreateTemplateFromInput();
         ClearCreatureForm();
-        dmb.save.SaveEncounter();
+
     }
 
     export function GetCurrentCreature(): Creature {

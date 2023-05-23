@@ -108,7 +108,7 @@ var dmb;
                 return;
             AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
             ClearCreatureForm();
-            dmb.save.SaveEncounter();
+            dmb.save.SaveCreatureData();
         }
         encounter.AddCreaturesAndResetForm = AddCreaturesAndResetForm;
         function CreateTemplateFromInput() {
@@ -119,6 +119,7 @@ var dmb;
             let namecount = creatureTemplates.filter(ct => ct.Name == name).length + 1;
             let picturedata = dmb.premiumEncounter.IsPremium ? dmb.premiumEncounter.GetPictureValue() : "";
             CreateTemplate(name, ac, maxhp, defaultnotes, namecount, picturedata);
+            dmb.save.SaveCreatureTemplateData();
         }
         function CreateTemplate(name, ac, maxhp, defaultnotes, namecount, picturedata) {
             let template = new CreatureTemplate();
@@ -208,7 +209,7 @@ var dmb;
             let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
             table.deleteRow(deleteIndex);
             creatures.splice(deleteIndex, 1);
-            dmb.save.SaveEncounter();
+            dmb.save.SaveCreatureData();
         }
         encounter.RemoveFromInitiative = RemoveFromInitiative;
         function ClearCreatureForm() {
@@ -260,9 +261,11 @@ var dmb;
             DeselectRow(currentcreature.Id);
             SaveCreatureNotes(currentcreature);
             FillCreatureDisplayFromCreature(nextcreature);
+            dmb.save.SaveCreatureData();
         }
         function SaveCreatureNotes(creature) {
             creature.Notes = $("#creatureDisplayNotes").val();
+            dmb.save.SaveCreatureData();
         }
         encounter.SaveCreatureNotes = SaveCreatureNotes;
         function DeselectRow(creatureid) {
@@ -320,7 +323,6 @@ var dmb;
         function AddTemplateToLibraryAndResetForm() {
             CreateTemplateFromInput();
             ClearCreatureForm();
-            dmb.save.SaveEncounter();
         }
         encounter.AddTemplateToLibraryAndResetForm = AddTemplateToLibraryAndResetForm;
         function GetCurrentCreature() {
