@@ -210,6 +210,15 @@ var dmb;
             let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
             table.deleteRow(deleteIndex);
             creatures.splice(deleteIndex, 1);
+            if (creatures.length == 0) {
+                FillCreatureDisplay("Nothing yet!", "--", "--", "", null, "");
+            }
+            else if (GetCurrentCreature().CreatureIndex == deleteIndex) {
+                if (deleteIndex == creatures.length)
+                    FillCreatureDisplayFromCreature(creatures[0]);
+                else
+                    FillCreatureDisplayFromCreature(creatures[deleteIndex]);
+            }
             dmb.save.SaveCreatureData();
         }
         encounter.RemoveFromInitiative = RemoveFromInitiative;
@@ -270,11 +279,11 @@ var dmb;
         }
         encounter.SaveCreatureNotes = SaveCreatureNotes;
         function DeselectRow(creatureid) {
-            $("#" + creatureid + "_delete").prop("disabled", false);
+            //$("#" + creatureid + "_delete").prop("disabled", false);
             $(document.getElementById(creatureid + "_row")).removeClass(SELECTEDROWCLASS);
         }
         function SelectRow(creatureid) {
-            $("#" + creatureid + "_delete").prop("disabled", true);
+            //$("#" + creatureid + "_delete").prop("disabled", true);
             $(document.getElementById(creatureid + "_row")).addClass(SELECTEDROWCLASS);
         }
         function ShowPreviousCreature() {

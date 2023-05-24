@@ -8,6 +8,7 @@ var dmb;
         const HPINDEX = 2;
         const INITIATIVESINDEX = 3;
         const ADDINDEX = 4;
+        const DELETEINDEX = 5;
         function init() {
             TABLE = document.getElementById("creatureLibraryTable");
         }
@@ -18,8 +19,9 @@ var dmb;
             row.insertCell(NAMEINDEX).innerHTML = template.GetName();
             row.insertCell(ACINDEX).innerHTML = template.AC.toString();
             row.insertCell(HPINDEX).innerHTML = template.MaxHP.toString();
-            row.insertCell(INITIATIVESINDEX).innerHTML = "<div class='text-center p-2' > <input id='" + index + "_InitiativeInput' type = 'text' /></div>";
-            row.insertCell(ADDINDEX).innerHTML = "<button class='btn btn-primary' onclick='dmb.library.AddCreatureFromLibrary(" + index + ")'>+</button>";
+            row.insertCell(INITIATIVESINDEX).innerHTML = "<div class='p-2'> <input style='width:80px' id='" + index + "_InitiativeInput' type = 'text' /></div>";
+            row.insertCell(ADDINDEX).innerHTML = "<button class='btn btn-primary btn-sm' onclick='dmb.library.AddCreatureFromLibrary(" + index + ")'>+</button>";
+            row.insertCell(DELETEINDEX).innerHTML = "<button class='btn btn-outline-danger btn-sm' onclick='dmb.library.DeleteTemplateByIndex(" + index + ")'><i class='bi bi-trash'></i></button>";
         }
         library.InsertTemplateToTable = InsertTemplateToTable;
         function AddCreatureFromLibrary(index) {
@@ -32,6 +34,9 @@ var dmb;
             dmb.save.SaveCreatureData();
         }
         library.AddCreatureFromLibrary = AddCreatureFromLibrary;
+        function DeleteTemplateByIndex(index) {
+            //also delete all creatures? yeah
+        }
         function ClearInitiativeInput(index) {
             $("#" + index + "_InitiativeInput").val('');
         }

@@ -1,60 +1,11 @@
 namespace dmb.save {
-    export function init() {
-        if (document.getElementById("encounterName")?.innerHTML == undefined) {
-            return;
-        }
-        LoadEncounter();
-        //setInterval(SaveEncounter, 30000);
+    export function CanSave(): boolean {
+        return document.getElementById("encounterName")?.innerHTML != undefined;
     }
-
-    export function SaveEncounter() {
-        const encounterName = document.getElementById("encounterName")?.innerHTML != undefined ? document.getElementById("encounterName")?.innerHTML : null;
-        if (encounterName == null)
-            return;
-
-        let currentcreature = dmb.encounter.GetCurrentCreature();
-        if (currentcreature != null)
-            dmb.encounter.SaveCreatureNotes(currentcreature);
-
-        let creatureTemplates = [];
-        let currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(0);
-        for (let i = 1; currentCreatureTemplate != null; i++) {
-            creatureTemplates.push({
-                Name: currentCreatureTemplate.Name,
-                NameCount: currentCreatureTemplate.NameCount,
-                MaxHP: currentCreatureTemplate.MaxHP,
-                AC: currentCreatureTemplate.AC,
-                DefaultNotes: currentCreatureTemplate.DefaultNotes,
-                PictureData: currentCreatureTemplate.PictureData
-            });
-            currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(i);
+    export function init() {
+        if (CanSave()) {
+            LoadEncounter();
         }
-
-        let creatures = [];
-        let currentCreature = dmb.encounter.GetCreature(0);
-        for (let i = 1; currentCreature != null; i++) {
-            creatures.push({
-                Id: currentCreature.Id,
-                NameCount: currentCreature.NameCount,
-                CreatureIndex: currentCreature.CreatureIndex,
-                Initiative: currentCreature.Initiative,
-                CurrentHP: currentCreature.CurrentHP,
-                Notes: currentCreature.Notes
-            });
-            currentCreature = dmb.encounter.GetCreature(i);
-        }
-
-        let encounterjson = {
-            Name: encounterName,
-            CurrentId: GetCurrentId(),
-            CreatureTemplates: creatureTemplates,
-            Creatures: creatures
-        }
-
-        $.post("/Encounter/SaveEncounter", {
-            __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(),
-            encounter: encounterjson
-        });
     }
 
     export function SaveCreatureData(): void{
@@ -132,23 +83,9 @@ namespace dmb.save {
         var result = await fetch("/Encounter/LoadEncounter/" + encounterName, {
             headers: {
                 'Accept': 'application/json'
-                //'Content-Type': 'application/json'
             },
             method: 'get'
         }).then(response => response.json())
-        //.then(response => {
-        //    if (response != "")
-        //        PopulateEncounterFromJson(JSON.parse(response));
-        ;
-            
-
-                   
-        //.then(response => response.value)
-        //.then(response => {
-        //    if (response != "")
-        //        PopulateEncounterFromJson(JSON.parse(response));
-        //})
-        //.catch();
 
         if (result != "")
             PopulateEncounterFromJson(JSON.parse(result));
@@ -177,24 +114,5 @@ namespace dmb.save {
             dmb.encounter.FillCreatureDisplayFromCreature(dmb.encounter.GetCurrentCreature());
         }
     }
-
-    const getSizeInBytes = obj => {
-        let str = null;
-        if (typeof obj === 'string') {
-            // If obj is a string, then use it
-            str = obj;
-        } else {
-            // Else, make obj into a string
-            str = JSON.stringify(obj);
-        }
-        // Get the length of the Uint8Array
-        const bytes = new TextEncoder().encode(str).length;
-        return bytes;
-    };
-
-    const logSizeInBytes = (description, obj) => {
-        const bytes = getSizeInBytes(obj);
-        console.log(`${description} is approximately ${bytes} B`);
-    };
 }
 $(dmb.save.init)

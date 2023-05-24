@@ -11,61 +11,17 @@ var dmb;
 (function (dmb) {
     var save;
     (function (save) {
-        function init() {
+        function CanSave() {
             var _a;
-            if (((_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML) == undefined) {
-                return;
+            return ((_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML) != undefined;
+        }
+        save.CanSave = CanSave;
+        function init() {
+            if (CanSave()) {
+                LoadEncounter();
             }
-            LoadEncounter();
-            //setInterval(SaveEncounter, 30000);
         }
         save.init = init;
-        function SaveEncounter() {
-            var _a, _b;
-            const encounterName = ((_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML) != undefined ? (_b = document.getElementById("encounterName")) === null || _b === void 0 ? void 0 : _b.innerHTML : null;
-            if (encounterName == null)
-                return;
-            let currentcreature = dmb.encounter.GetCurrentCreature();
-            if (currentcreature != null)
-                dmb.encounter.SaveCreatureNotes(currentcreature);
-            let creatureTemplates = [];
-            let currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(0);
-            for (let i = 1; currentCreatureTemplate != null; i++) {
-                creatureTemplates.push({
-                    Name: currentCreatureTemplate.Name,
-                    NameCount: currentCreatureTemplate.NameCount,
-                    MaxHP: currentCreatureTemplate.MaxHP,
-                    AC: currentCreatureTemplate.AC,
-                    DefaultNotes: currentCreatureTemplate.DefaultNotes,
-                    PictureData: currentCreatureTemplate.PictureData
-                });
-                currentCreatureTemplate = dmb.encounter.GetCreatureTemplate(i);
-            }
-            let creatures = [];
-            let currentCreature = dmb.encounter.GetCreature(0);
-            for (let i = 1; currentCreature != null; i++) {
-                creatures.push({
-                    Id: currentCreature.Id,
-                    NameCount: currentCreature.NameCount,
-                    CreatureIndex: currentCreature.CreatureIndex,
-                    Initiative: currentCreature.Initiative,
-                    CurrentHP: currentCreature.CurrentHP,
-                    Notes: currentCreature.Notes
-                });
-                currentCreature = dmb.encounter.GetCreature(i);
-            }
-            let encounterjson = {
-                Name: encounterName,
-                CurrentId: GetCurrentId(),
-                CreatureTemplates: creatureTemplates,
-                Creatures: creatures
-            };
-            $.post("/Encounter/SaveEncounter", {
-                __RequestVerificationToken: $('input[name=__RequestVerificationToken]').val(),
-                encounter: encounterjson
-            });
-        }
-        save.SaveEncounter = SaveEncounter;
         function SaveCreatureData() {
             var _a, _b;
             const encounterName = ((_a = document.getElementById("encounterName")) === null || _a === void 0 ? void 0 : _a.innerHTML) != undefined ? (_b = document.getElementById("encounterName")) === null || _b === void 0 ? void 0 : _b.innerHTML : null;
@@ -136,16 +92,9 @@ var dmb;
                 var result = yield fetch("/Encounter/LoadEncounter/" + encounterName, {
                     headers: {
                         'Accept': 'application/json'
-                        //'Content-Type': 'application/json'
                     },
                     method: 'get'
                 }).then(response => response.json());
-                //.then(response => response.value)
-                //.then(response => {
-                //    if (response != "")
-                //        PopulateEncounterFromJson(JSON.parse(response));
-                //})
-                //.catch();
                 if (result != "")
                     PopulateEncounterFromJson(JSON.parse(result));
             });
@@ -172,24 +121,6 @@ var dmb;
                 dmb.encounter.FillCreatureDisplayFromCreature(dmb.encounter.GetCurrentCreature());
             }
         }
-        const getSizeInBytes = obj => {
-            let str = null;
-            if (typeof obj === 'string') {
-                // If obj is a string, then use it
-                str = obj;
-            }
-            else {
-                // Else, make obj into a string
-                str = JSON.stringify(obj);
-            }
-            // Get the length of the Uint8Array
-            const bytes = new TextEncoder().encode(str).length;
-            return bytes;
-        };
-        const logSizeInBytes = (description, obj) => {
-            const bytes = getSizeInBytes(obj);
-            console.log(`${description} is approximately ${bytes} B`);
-        };
     })(save = dmb.save || (dmb.save = {}));
 })(dmb || (dmb = {}));
 $(dmb.save.init);
