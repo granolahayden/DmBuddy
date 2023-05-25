@@ -64,16 +64,6 @@ namespace DmBuddyMvc.Controllers
 			return result.IsSuccess ? Results.Ok() : Results.BadRequest();
 		}
 
-
-		[Authorize]
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IResult> SaveEncounter(EncounterDTO encounter)
-		{
-			var result = await _encounterservices.SaveEncounterAsync(User.LoginId(), encounter);
-			return result.IsSuccess ? Results.Ok() : Results.BadRequest();
-		}
-
 		[Authorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]

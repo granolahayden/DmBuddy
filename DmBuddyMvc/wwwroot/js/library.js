@@ -36,13 +36,18 @@ var dmb;
         }
         library.AddCreatureFromLibrary = AddCreatureFromLibrary;
         function DeleteTemplateByName(name) {
-            const deleteindex = dmb.encounter.GetCreatureTemplates().findIndex(t => t.GetName() == name);
-            TABLE.deleteRow(deleteindex);
-            let deletecreatures = dmb.encounter.GetCreatures().filter(c => c.CreatureIndex == deleteindex);
-            for (let i = 0; i < deletecreatures.length; i++) {
-                dmb.encounter.RemoveFromInitiative(deletecreatures[i].Id);
+            dmb.save.LockSave();
+            try {
+                const deleteindex = dmb.encounter.GetCreatureTemplates().findIndex(t => t.GetName() == name);
+                TABLE.deleteRow(deleteindex);
+                let deletecreatures = dmb.encounter.GetCreatures().filter(c => c.TemplateName == dmb.encounter.GetCreatureTemplate(deleteindex).GetName());
+                for (let i = 0; i < deletecreatures.length; i++) {
+                    dmb.encounter.RemoveFromInitiative(deletecreatures[i].Id);
+                }
+                dmb.encounter.GetCreatureTemplates().splice(deleteindex, 1);
             }
-            dmb.encounter.GetCreatureTemplates().splice(deleteindex, 1);
+            catch (error) { }
+            dmb.save.UnlockSave();
             dmb.save.SaveCreatureTemplateData();
             dmb.save.SaveCreatureData();
         }

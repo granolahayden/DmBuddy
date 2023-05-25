@@ -12,11 +12,11 @@ var dmb;
         }
         encounter.CreatureTemplate = CreatureTemplate;
         class Creature {
-            constructor(template, templateIndex) {
+            constructor(template) {
                 this.Id = id++;
                 this.CurrentHP = template.MaxHP;
                 this.Notes = template.DefaultNotes;
-                this.CreatureIndex = Number(templateIndex);
+                this.TemplateName = template.GetName();
             }
             GetHP() {
                 return this.CurrentHP.toString() + "/" + this.GetCreatureTemplate().MaxHP.toString();
@@ -25,13 +25,13 @@ var dmb;
                 return this.GetCreatureTemplate().AC;
             }
             GetCreatureTemplate() {
-                return creatureTemplates[this.CreatureIndex];
+                return creatureTemplates.find(ct => ct.GetName() == this.TemplateName);
             }
             GetName() {
                 if (this.NameCount > 1)
-                    return this.GetCreatureTemplate().GetName() + " - " + this.NameCount;
+                    return this.TemplateName + " - " + this.NameCount;
                 else
-                    return this.GetCreatureTemplate().GetName();
+                    return this.TemplateName;
             }
         }
         encounter.Creature = Creature;
@@ -50,6 +50,7 @@ var dmb;
             creatures = [];
             creatureTemplates = [];
             id = 0;
+            currentCreature = null;
             nameInput = $("#creatureNameInput");
             acInput = $("#creatureACInput");
             hpInput = $("#creatureHPInput");
@@ -141,9 +142,10 @@ var dmb;
             creaturesWithSameName.forEach(c => { if (Number(nameCount) < Number(c.NameCount))
                 nameCount = c.NameCount; });
             for (let i = 0; i < initiatives.length; i++) {
-                let creature = new Creature(template, index);
+                let creature = new Creature(template);
                 creature.NameCount = ++nameCount;
                 creature.Initiative = Number(initiatives[i]);
+                creature.TemplateName = template.GetName();
                 AddCreature(creature);
             }
         }
@@ -198,7 +200,8 @@ var dmb;
             if (Number(document.getElementById("creatureDisplayId").innerHTML) == id) {
                 document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
             }
-            dmb.save.SaveCreatureData();
+            if (amount != 0)
+                dmb.save.SaveCreatureData();
         }
         function DamageCreatureFromId(id) {
             let amount = Number($("#" + id + "_DamageOrHealAmountFromTable").val()) * -1;
@@ -207,9 +210,10 @@ var dmb;
         encounter.DamageCreatureFromId = DamageCreatureFromId;
         function RemoveFromInitiative(id) {
             let table = document.getElementById("initiativeTable").getElementsByTagName('tbody')[0];
-            let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
+            let deleteIndex = creatures.findIndex(c => c.Id == id);
             table.deleteRow(deleteIndex);
             if (creatures.length == 1) {
+                currentCreature = null;
                 FillCreatureDisplay("Nothing yet!", "--", "--", "", null, "");
             }
             else if (creatures.indexOf(GetCurrentCreature()) == deleteIndex) {
@@ -236,19 +240,24 @@ var dmb;
             }
             let currentcreatureid = GetCurrentCreatureId();
             if (currentcreatureid == null) {
+                currentCreature = creatures[0];
                 FillCreatureDisplayFromCreature(creatures[0]);
                 return;
             }
-            let currentcreature = creatures.find(c => c.Id == currentcreatureid);
-            let currentcreatureindex = creatures.indexOf(currentcreature);
+            let currentcreatureindex = creatures.indexOf(GetCurrentCreature());
             let nextcreatureindex = currentcreatureindex == creatures.length - 1 ? 0 : Number(currentcreatureindex) + 1;
             let nextcreature = creatures[nextcreatureindex];
-            SaveCurrentCreatureThenLoadNext(currentcreature, nextcreature);
+            SaveCurrentCreatureThenLoadNext(nextcreature);
         }
         encounter.ShowNextCreature = ShowNextCreature;
         function GetCurrentCreatureId() {
-            return document.getElementById("creatureDisplayId").innerHTML == "" ? null : Number(document.getElementById("creatureDisplayId").innerHTML);
+            let currentCreature = GetCurrentCreature();
+            if (currentCreature == null)
+                return null;
+            else
+                return currentCreature.Id;
         }
+        encounter.GetCurrentCreatureId = GetCurrentCreatureId;
         function FillCreatureDisplayFromCreature(creature) {
             FillCreatureDisplay(creature.GetName(), creature.GetHP(), creature.GetAC().toString(), creature.Notes, creature.Id.toString(), creature.GetCreatureTemplate().PictureData);
             SelectRow(creature.Id);
@@ -264,10 +273,13 @@ var dmb;
                 dmb.premiumEncounter.SetPictureData(picturedata);
             }
         }
-        function SaveCurrentCreatureThenLoadNext(currentcreature, nextcreature) {
-            DeselectRow(currentcreature.Id);
-            SaveCreatureNotes(currentcreature);
+        function SaveCurrentCreatureThenLoadNext(nextcreature) {
+            DeselectRow(GetCurrentCreatureId());
+            dmb.save.LockSave();
+            SaveCreatureNotes(GetCurrentCreature());
+            dmb.save.UnlockSave();
             FillCreatureDisplayFromCreature(nextcreature);
+            currentCreature = nextcreature;
             dmb.save.SaveCreatureData();
         }
         function SaveCreatureNotes(creature) {
@@ -294,7 +306,7 @@ var dmb;
             let currentcreatureindex = creatures.indexOf(currentcreature);
             let previouscreatureindex = currentcreatureindex == 0 ? creatures.length - 1 : Number(currentcreatureindex) - 1;
             let previouscreature = creatures[previouscreatureindex];
-            SaveCurrentCreatureThenLoadNext(currentcreature, previouscreature);
+            SaveCurrentCreatureThenLoadNext(previouscreature);
         }
         encounter.ShowPreviousCreature = ShowPreviousCreature;
         function HealFromDisplay() {
@@ -331,12 +343,17 @@ var dmb;
         }
         encounter.AddTemplateToLibraryAndResetForm = AddTemplateToLibraryAndResetForm;
         function GetCurrentCreature() {
-            const currentid = GetCurrentCreatureId();
-            if (currentid == null)
-                return null;
-            return creatures.find(c => c.Id == currentid);
+            return currentCreature;
         }
         encounter.GetCurrentCreature = GetCurrentCreature;
+        function SetCurrentCreatureById(id) {
+            if (id == null)
+                currentCreature = null;
+            else {
+                currentCreature = creatures.find(c => c.Id == id);
+            }
+        }
+        encounter.SetCurrentCreatureById = SetCurrentCreatureById;
         function GetCreatureTemplate(index) {
             if (index >= creatureTemplates.length)
                 return null;
