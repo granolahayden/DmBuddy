@@ -209,16 +209,13 @@ var dmb;
             let table = document.getElementById("initiativeTable").getElementsByTagName('tbody')[0];
             let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
             table.deleteRow(deleteIndex);
-            creatures.splice(deleteIndex, 1);
-            if (creatures.length == 0) {
+            if (creatures.length == 1) {
                 FillCreatureDisplay("Nothing yet!", "--", "--", "", null, "");
             }
-            else if (GetCurrentCreature().CreatureIndex == deleteIndex) {
-                if (deleteIndex == creatures.length)
-                    FillCreatureDisplayFromCreature(creatures[0]);
-                else
-                    FillCreatureDisplayFromCreature(creatures[deleteIndex]);
+            else if (creatures.indexOf(GetCurrentCreature()) == deleteIndex) {
+                ShowNextCreature();
             }
+            creatures.splice(deleteIndex, 1);
             dmb.save.SaveCreatureData();
         }
         encounter.RemoveFromInitiative = RemoveFromInitiative;
@@ -279,11 +276,9 @@ var dmb;
         }
         encounter.SaveCreatureNotes = SaveCreatureNotes;
         function DeselectRow(creatureid) {
-            //$("#" + creatureid + "_delete").prop("disabled", false);
             $(document.getElementById(creatureid + "_row")).removeClass(SELECTEDROWCLASS);
         }
         function SelectRow(creatureid) {
-            //$("#" + creatureid + "_delete").prop("disabled", true);
             $(document.getElementById(creatureid + "_row")).addClass(SELECTEDROWCLASS);
         }
         function ShowPreviousCreature() {
@@ -354,27 +349,14 @@ var dmb;
             return creatures[index];
         }
         encounter.GetCreature = GetCreature;
-        //export function ClearPage() {
-        //    //clear creature table
-        //    const creaturetable = document.getElementById("initiativeTable").getElementsByTagName('tbody')[0];
-        //    for (let i = 0; i < creaturetable.rows.length; i++) {
-        //        creaturetable.deleteRow(i);
-        //    }
-        //    //clear templates table
-        //    const templatetable = document.getElementById("creatureLibraryTable").getElementsByTagName('tbody')[0];
-        //    for (let i = 0; i < templatetable.rows.length; i++) {
-        //        templatetable.deleteRow(i);
-        //    }
-        //    //clear creatures
-        //    for (let i = 0; i < creatures.length; i++) {
-        //        creatures.pop();
-        //    }
-        //    //clear templates
-        //    for (let i = 0; i < creatureTemplates.length; i++) {
-        //        creatureTemplates.pop();
-        //    }
-        //    FillCreatureDisplay("Nothing yet!", "--", "--", "", "", "");
-        //}
+        function GetCreatureTemplates() {
+            return creatureTemplates;
+        }
+        encounter.GetCreatureTemplates = GetCreatureTemplates;
+        function GetCreatures() {
+            return creatures;
+        }
+        encounter.GetCreatures = GetCreatures;
     })(encounter = dmb.encounter || (dmb.encounter = {}));
 })(dmb || (dmb = {}));
 $(dmb.encounter.Init);

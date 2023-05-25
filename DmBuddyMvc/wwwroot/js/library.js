@@ -10,35 +10,45 @@ var dmb;
         const ADDINDEX = 4;
         const DELETEINDEX = 5;
         function init() {
-            TABLE = document.getElementById("creatureLibraryTable");
+            TABLE = document.getElementById("creatureLibraryTable").getElementsByTagName('tbody')[0];
         }
         library.init = init;
         function InsertTemplateToTable(template, index) {
-            let row = TABLE.getElementsByTagName('tbody')[0].insertRow(index);
+            let row = TABLE.insertRow(index);
             row.className = "align-middle";
             row.insertCell(NAMEINDEX).innerHTML = template.GetName();
             row.insertCell(ACINDEX).innerHTML = template.AC.toString();
             row.insertCell(HPINDEX).innerHTML = template.MaxHP.toString();
-            row.insertCell(INITIATIVESINDEX).innerHTML = "<div class='p-2'> <input style='width:80px' id='" + index + "_InitiativeInput' type = 'text' /></div>";
-            row.insertCell(ADDINDEX).innerHTML = "<button class='btn btn-primary btn-sm' onclick='dmb.library.AddCreatureFromLibrary(" + index + ")'>+</button>";
-            row.insertCell(DELETEINDEX).innerHTML = "<button class='btn btn-outline-danger btn-sm' onclick='dmb.library.DeleteTemplateByIndex(" + index + ")'><i class='bi bi-trash'></i></button>";
+            row.insertCell(INITIATIVESINDEX).innerHTML = "<div class='p-2'> <input style='width:80px' id='" + template.GetName() + "_InitiativeInput' type = 'text' /></div>";
+            row.insertCell(ADDINDEX).innerHTML = "<button class='btn btn-primary btn-sm' onclick='dmb.library.AddCreatureFromLibrary(\"" + template.GetName() + "\")'>+</button>";
+            row.insertCell(DELETEINDEX).innerHTML = "<button class='btn btn-outline-danger btn-sm' onclick='dmb.library.DeleteTemplateByName(\"" + template.GetName() + "\")'><i class='bi bi-trash'></i></button>";
         }
         library.InsertTemplateToTable = InsertTemplateToTable;
-        function AddCreatureFromLibrary(index) {
-            let initiatives = $("#" + index + "_InitiativeInput").val();
+        function AddCreatureFromLibrary(name) {
+            let initiatives = $("[id='" + name + "_InitiativeInput']").first().val();
             let initiativesarray = initiatives.match(dmb.encounter.INITIATIVEREGEX);
             if (initiativesarray.length < 1)
                 return;
-            dmb.encounter.AddCreaturesFromTemplateIndex(index, initiativesarray);
-            ClearInitiativeInput(index);
+            let templateindex = dmb.encounter.GetCreatureTemplates().findIndex(t => t.GetName() == name);
+            dmb.encounter.AddCreaturesFromTemplateIndex(templateindex, initiativesarray);
+            ClearInitiativeInput(name);
             dmb.save.SaveCreatureData();
         }
         library.AddCreatureFromLibrary = AddCreatureFromLibrary;
-        function DeleteTemplateByIndex(index) {
-            //also delete all creatures? yeah
+        function DeleteTemplateByName(name) {
+            const deleteindex = dmb.encounter.GetCreatureTemplates().findIndex(t => t.GetName() == name);
+            TABLE.deleteRow(deleteindex);
+            let deletecreatures = dmb.encounter.GetCreatures().filter(c => c.CreatureIndex == deleteindex);
+            for (let i = 0; i < deletecreatures.length; i++) {
+                dmb.encounter.RemoveFromInitiative(deletecreatures[i].Id);
+            }
+            dmb.encounter.GetCreatureTemplates().splice(deleteindex, 1);
+            dmb.save.SaveCreatureTemplateData();
+            dmb.save.SaveCreatureData();
         }
-        function ClearInitiativeInput(index) {
-            $("#" + index + "_InitiativeInput").val('');
+        library.DeleteTemplateByName = DeleteTemplateByName;
+        function ClearInitiativeInput(name) {
+            $("[id='" + name + "_InitiativeInput']").first().val('');
         }
     })(library = dmb.library || (dmb.library = {}));
 })(dmb || (dmb = {}));
