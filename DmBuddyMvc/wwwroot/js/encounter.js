@@ -103,16 +103,22 @@ var dmb;
         function AddCreaturesAndResetForm() {
             if (initiativeInput.val().toString().trim() == "")
                 return;
-            CreateTemplateFromInput();
+            let templateIndex = creatureTemplates.findIndex(ct => ct.GetName() == nameInput.val());
+            if (templateIndex == -1) {
+                CreateTemplateFromInput();
+                templateIndex = creatureTemplates.length - 1;
+            }
             let initiatives = initiativeInput.val().toString().match(encounter.INITIATIVEREGEX);
             if (initiatives.length < 1)
                 return;
-            AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
+            AddCreaturesFromTemplateIndex(templateIndex, initiatives);
             ClearCreatureForm();
             dmb.save.SaveCreatureData();
         }
         encounter.AddCreaturesAndResetForm = AddCreaturesAndResetForm;
         function CreateTemplateFromInput() {
+            if (creatureTemplates.findIndex(ct => ct.GetName() == nameInput.val()) != -1)
+                return;
             let name = nameInput.val();
             let ac = Number(acInput.val());
             let maxhp = Number(hpInput.val());

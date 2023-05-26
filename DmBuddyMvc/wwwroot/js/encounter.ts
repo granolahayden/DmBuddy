@@ -148,13 +148,18 @@
         if (initiativeInput.val().toString().trim() == "")
             return;
 
-        CreateTemplateFromInput();
+        let templateIndex = creatureTemplates.findIndex(ct => ct.GetName() == nameInput.val() as string);
+
+        if (templateIndex == -1) {
+            CreateTemplateFromInput();
+            templateIndex = creatureTemplates.length - 1;
+        }   
 
         let initiatives = initiativeInput.val().toString().match(INITIATIVEREGEX);
         if (initiatives.length < 1)
             return;
 
-        AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
+        AddCreaturesFromTemplateIndex(templateIndex, initiatives);
         ClearCreatureForm();
         dmb.save.SaveCreatureData();
     }
@@ -162,6 +167,10 @@
     
 
     function CreateTemplateFromInput(): void {
+        if (creatureTemplates.findIndex(ct => ct.GetName() == nameInput.val() as string) != -1)
+            return;
+
+
         let name = nameInput.val() as string;
         let ac = Number(acInput.val());
         let maxhp = Number(hpInput.val());
