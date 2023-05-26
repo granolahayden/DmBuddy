@@ -17,19 +17,20 @@
     }
 
     export class Creature {
-        constructor(template: CreatureTemplate, templateIndex: number) {
+        constructor(template: CreatureTemplate) {
             this.Id = id++;
             this.CurrentHP = template.MaxHP;
             this.Notes = template.DefaultNotes;
-            this.CreatureIndex = Number(templateIndex);
+            this.TemplateName = template.GetName();
         }
 
         Id: number;
-        CreatureIndex: number;
         NameCount: number;
         CurrentHP: number;
         Initiative: number;
         Notes: string;
+        TemplateName: string;
+        
 
         GetHP(): string {
             return this.CurrentHP.toString() + "/" + this.GetCreatureTemplate().MaxHP.toString();
@@ -40,14 +41,14 @@
         }
 
         GetCreatureTemplate(): CreatureTemplate {
-            return creatureTemplates[this.CreatureIndex];
+            return creatureTemplates.find(ct => ct.GetName() == this.TemplateName);
         }
 
         GetName(): string {
             if (this.NameCount > 1)
-                return this.GetCreatureTemplate().GetName() + " - " + this.NameCount;
+                return this.TemplateName + " - " + this.NameCount;
             else
-                return this.GetCreatureTemplate().GetName();
+                return this.TemplateName;
         }
     }
 
@@ -69,16 +70,20 @@
     declare let creatureTemplates: CreatureTemplate[];
     declare let id: number;
 
+    declare let currentCreature: Creature;
+
     declare let nameInput: JQuery<HTMLElement>;
     declare let acInput: JQuery<HTMLElement>;
     declare let hpInput: JQuery<HTMLElement>;
     declare let initiativeInput: JQuery<HTMLElement>;
     declare let notesInput: JQuery<HTMLElement>;
+    
 
     export function Init(): void {
         creatures = [];
         creatureTemplates = [];
         id = 0;
+        currentCreature = null;
 
         nameInput = $("#creatureNameInput");
         acInput = $("#creatureACInput");
@@ -151,7 +156,7 @@
 
         AddCreaturesFromTemplateIndex(creatureTemplates.length - 1, initiatives);
         ClearCreatureForm();
-        dmb.save.SaveEncounter();
+        dmb.save.SaveCreatureData();
     }
 
     
@@ -164,9 +169,8 @@
         let namecount = creatureTemplates.filter(ct => ct.Name == name).length + 1;
         let picturedata = dmb.premiumEncounter.IsPremium ? dmb.premiumEncounter.GetPictureValue() : "";
 
-        
-
         CreateTemplate(name, ac, maxhp, defaultnotes, namecount, picturedata);
+        dmb.save.SaveCreatureTemplateData();
     }
 
     export function CreateTemplate(name: string, ac: number, maxhp: number, defaultnotes: string, namecount: number, picturedata: string): void {
@@ -193,9 +197,10 @@
         creaturesWithSameName.forEach(c => { if (Number(nameCount) < Number(c.NameCount)) nameCount = c.NameCount; })
 
         for (let i = 0; i < initiatives.length; i++) {
-            let creature = new Creature(template, index);
+            let creature = new Creature(template);
             creature.NameCount = ++nameCount;
             creature.Initiative = Number(initiatives[i]);
+            creature.TemplateName = template.GetName();
             AddCreature(creature);
         }
     }
@@ -253,6 +258,9 @@
         if (Number(document.getElementById("creatureDisplayId").innerHTML) == id) {
             document.getElementById("creatureDisplayHP").innerHTML = creature.GetHP();
         }
+
+        if(amount != 0)
+            dmb.save.SaveCreatureData();
     }
 
     export function DamageCreatureFromId(id: number): void {
@@ -262,10 +270,18 @@
 
     export function RemoveFromInitiative(id: number) {
         let table = document.getElementById("initiativeTable").getElementsByTagName('tbody')[0];
-        let deleteIndex = creatures.indexOf(creatures.find(c => c.Id == id));
+        let deleteIndex = creatures.findIndex(c => c.Id == id);
         table.deleteRow(deleteIndex);
+        
+        if (creatures.length == 1) {
+            currentCreature = null;
+            FillCreatureDisplay("Nothing yet!", "--", "--", "", null, "");
+        }
+        else if (creatures.indexOf(GetCurrentCreature()) == deleteIndex) {
+            ShowNextCreature();
+        }
         creatures.splice(deleteIndex, 1);
-        dmb.save.SaveEncounter();
+        dmb.save.SaveCreatureData();
     }
 
     export function ClearCreatureForm(): void {
@@ -288,20 +304,24 @@
 
         let currentcreatureid = GetCurrentCreatureId();
         if (currentcreatureid == null) {
+            currentCreature = creatures[0];
             FillCreatureDisplayFromCreature(creatures[0]);
             return;
         }
 
-        let currentcreature = creatures.find(c => c.Id == currentcreatureid);
-        let currentcreatureindex = creatures.indexOf(currentcreature);
+        let currentcreatureindex = creatures.indexOf(GetCurrentCreature());
         let nextcreatureindex = currentcreatureindex == creatures.length - 1 ? 0 : Number(currentcreatureindex) + 1;
         let nextcreature = creatures[nextcreatureindex];
 
-        SaveCurrentCreatureThenLoadNext(currentcreature, nextcreature);
+        SaveCurrentCreatureThenLoadNext(nextcreature);
     }
 
-    function GetCurrentCreatureId(): number {
-        return document.getElementById("creatureDisplayId").innerHTML == "" ? null : Number(document.getElementById("creatureDisplayId").innerHTML);
+    export function GetCurrentCreatureId(): number {
+        let currentCreature = GetCurrentCreature();
+        if (currentCreature == null)
+            return null;
+        else
+            return currentCreature.Id;
     }
 
     export function FillCreatureDisplayFromCreature(creature: Creature): void {
@@ -321,25 +341,28 @@
         }
     }
 
-    function SaveCurrentCreatureThenLoadNext(currentcreature: Creature, nextcreature: Creature): void {
-        DeselectRow(currentcreature.Id);
-        SaveCreatureNotes(currentcreature);
+    function SaveCurrentCreatureThenLoadNext(nextcreature: Creature): void {
+        DeselectRow(GetCurrentCreatureId());
+
+        dmb.save.LockSave();
+        SaveCreatureNotes(GetCurrentCreature());
+        dmb.save.UnlockSave();
+
         FillCreatureDisplayFromCreature(nextcreature);
+        currentCreature = nextcreature;
+        dmb.save.SaveCreatureData();
     }
 
     export function SaveCreatureNotes(creature: Creature) {
         creature.Notes = $("#creatureDisplayNotes").val() as string;
+        dmb.save.SaveCreatureData();
     }
 
     function DeselectRow(creatureid: number): void {
-        $("#" + creatureid + "_delete").prop("disabled", false);
         $(document.getElementById(creatureid + "_row")).removeClass(SELECTEDROWCLASS);
     }
 
-    
-
     function SelectRow(creatureid: number): void {
-        $("#" + creatureid + "_delete").prop("disabled", true);
         $(document.getElementById(creatureid + "_row")).addClass(SELECTEDROWCLASS);
     }
 
@@ -359,7 +382,7 @@
         let previouscreatureindex = currentcreatureindex == 0 ? creatures.length - 1 : Number(currentcreatureindex) - 1;
         let previouscreature = creatures[previouscreatureindex];
 
-        SaveCurrentCreatureThenLoadNext(currentcreature, previouscreature);
+        SaveCurrentCreatureThenLoadNext(previouscreature);
     }
 
     export function HealFromDisplay(): void {
@@ -399,15 +422,19 @@
     export function AddTemplateToLibraryAndResetForm(): void {
         CreateTemplateFromInput();
         ClearCreatureForm();
-        dmb.save.SaveEncounter();
+
     }
 
     export function GetCurrentCreature(): Creature {
-        const currentid = GetCurrentCreatureId();
-        if (currentid == null)
-            return null;
+        return currentCreature;
+    }
 
-        return creatures.find(c => c.Id == currentid);
+    export function SetCurrentCreatureById(id: number): void {
+        if (id == null)
+            currentCreature = null;
+        else {
+            currentCreature = creatures.find(c => c.Id == id);
+        }
     }
 
     export function GetCreatureTemplate(index: number) {
@@ -424,30 +451,13 @@
         return creatures[index];
     }
 
-    //export function ClearPage() {
-    //    //clear creature table
-    //    const creaturetable = document.getElementById("initiativeTable").getElementsByTagName('tbody')[0];
-    //    for (let i = 0; i < creaturetable.rows.length; i++) {
-    //        creaturetable.deleteRow(i);
-    //    }
+    export function GetCreatureTemplates(): CreatureTemplate[] {
+        return creatureTemplates;
+    }
 
-    //    //clear templates table
-    //    const templatetable = document.getElementById("creatureLibraryTable").getElementsByTagName('tbody')[0];
-    //    for (let i = 0; i < templatetable.rows.length; i++) {
-    //        templatetable.deleteRow(i);
-    //    }
+    export function GetCreatures(): Creature[]{
+        return creatures;
+    }
 
-    //    //clear creatures
-    //    for (let i = 0; i < creatures.length; i++) {
-    //        creatures.pop();
-    //    }
-
-    //    //clear templates
-    //    for (let i = 0; i < creatureTemplates.length; i++) {
-    //        creatureTemplates.pop();
-    //    }
-
-    //    FillCreatureDisplay("Nothing yet!", "--", "--", "", "", "");
-    //}
 }
 $(dmb.encounter.Init);

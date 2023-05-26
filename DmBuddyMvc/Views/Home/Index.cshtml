@@ -7,6 +7,23 @@
 </div>
 <hr/>
 
+
+<div class="text-center">
+    <h3>Update 1.4.2: Saving & Library Improvements</h3>
+    <h4>5/25/2023</h4>
+    <p>
+        Saving is now a lot more efficient. I realized the "every 30 seconds" approach wouldn't cut it if you just wanted to go in, add some creatures real quick, and then leave. But I also couldn't justify sending
+        large files to the server EVERY time you clicked "Next Creature." The solution? The Creature Library and Initiative list are saved seperately, and making changes to 1 doesn't save both at the same time.
+        To avoid some issues, I did put a file limit in place (subject to change) to prevent this from being a $3/mo file storage service. If a file you upload is too large, it'll save the creature and insert everything as normal, but
+        it won't upload the image.
+    </p>
+    <p>
+        Knowing it may be frustrating to now permanently have a creature in the library you don't want, I added the ability to remove Creature Templates from the library. Careful, this deletes ALL creatures associated with the template in the initiative list.
+        This change also lets you remove a creature from initiative, even if it's the currently selected creature. It'll now just select the next creature in line, or go back to blank if that was the last creature.
+    </p>
+</div>
+<hr />
+
 <div class="text-center">
     <h3>Update 1.4.1: Bug Fixes</h3>
     <h4>5/22/2023</h4>
